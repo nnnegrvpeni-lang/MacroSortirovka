@@ -1170,8 +1170,8 @@ input:checked + .slider:before {
 .toast-success { border-color: rgba(16, 185, 129, 0.3); }
 .toast-success .toast-icon { color: var(--success); }
 
-.toast-info { border-color: rgba(6, 182, 212, 0.3); }
-.toast-info .toast-icon { color: var(--info); }
+.toast-info { border-color: var(--primary-glow); }
+.toast-info .toast-icon { color: var(--primary); }
 
 .toast-warning { border-color: rgba(245, 158, 11, 0.3); }
 .toast-warning .toast-icon { color: var(--warning); }

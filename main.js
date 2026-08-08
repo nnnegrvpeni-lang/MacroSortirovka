@@ -220,7 +220,7 @@ if (!gotTheLock) {
   });
 
   ipcMain.on('install-update', () => {
-    autoUpdater.quitAndInstall();
+    autoUpdater.quitAndInstall(true, true);
   });
 
   // Check for updates shortly after startup
