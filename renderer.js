@@ -1762,30 +1762,17 @@ function applyTheme(theme) {
   const removeBtn = document.getElementById('btn-remove-bg-image');
   
   if (bgImage) {
-    const applyBg = (dataUrl) => {
-      const bgRgb = hexToRgb(colors.bgApp) || { r: 9, g: 9, b: 22 };
-      root.style.setProperty('--bg-image-url', `url("${dataUrl}")`);
-      root.style.setProperty('--bg-image-overlay', `linear-gradient(rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, 0.82), rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, 0.88))`);
-      
-      if (thumbnail && thumbnailContainer && removeBtn) {
-        thumbnail.src = dataUrl;
-        thumbnailContainer.style.display = 'block';
-        removeBtn.style.display = 'inline-flex';
-      }
-    };
-
-    if (currentBgImageDataUrl) {
-      applyBg(currentBgImageDataUrl);
-    } else {
-      window.electronAPI.getFilePreview(bgImage).then(dataUrl => {
-        if (dataUrl) {
-          currentBgImageDataUrl = dataUrl;
-          applyBg(dataUrl);
-        }
-      }).catch(e => console.error(e));
+    const bgRgb = hexToRgb(colors.bgApp) || { r: 9, g: 9, b: 22 };
+    const bgUrl = `local-bg://${bgImage.replace(/\\/g, '/')}`;
+    root.style.setProperty('--bg-image-url', `url("${bgUrl}")`);
+    root.style.setProperty('--bg-image-overlay', `linear-gradient(rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, 0.82), rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, 0.88))`);
+    
+    if (thumbnail && thumbnailContainer && removeBtn) {
+      thumbnail.src = bgUrl;
+      thumbnailContainer.style.display = 'block';
+      removeBtn.style.display = 'inline-flex';
     }
   } else {
-    currentBgImageDataUrl = null;
     root.style.removeProperty('--bg-image-url');
     root.style.removeProperty('--bg-image-overlay');
     

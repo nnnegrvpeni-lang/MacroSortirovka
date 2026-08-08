@@ -1,4 +1,7 @@
-const { app, BrowserWindow, ipcMain, dialog, Tray, Menu, nativeImage, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Tray, Menu, nativeImage, shell, protocol, net } = require('electron');
+protocol.registerSchemesAsPrivileged([
+  { scheme: 'local-bg', privileges: { bypassCSP: true, secure: true, supportFetchAPI: true } }
+]);
 const path = require('path');
 const fs = require('fs');
 const Store = require('./store');
@@ -160,8 +163,19 @@ if (!gotTheLock) {
   });
 
   app.whenReady().then(() => {
-  // Initialize config store
-  store = new Store({
+    protocol.handle('local-bg', (request) => {
+      try {
+        const urlPath = decodeURIComponent(request.url.replace('local-bg://', ''));
+        const fileUrl = 'file:///' + urlPath.replace(/\\/g, '/');
+        return net.fetch(fileUrl);
+      } catch (e) {
+        console.error('Failed to resolve local-bg url:', e);
+        return new Response('Not Found', { status: 404 });
+      }
+    });
+
+    // Initialize config store
+    store = new Store({
     configName: 'user-settings',
     defaults: {
       folders: [],

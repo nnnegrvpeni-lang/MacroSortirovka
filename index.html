@@ -30,6 +30,12 @@
           root.style.setProperty('--primary-glow', `rgba(${rgb}, 0.15)`);
           root.style.setProperty('--primary-hover', `rgba(${rgb}, 0.85)`);
         }
+
+        if (theme.bgImage) {
+          const bgPath = theme.bgImage.replace(/\\/g, '/');
+          root.style.setProperty('--bg-image-url', `url("local-bg://${bgPath}")`);
+          document.documentElement.classList.add('has-bg-image');
+        }
       }
     } catch(e) {
       console.error('Failed to load initial theme:', e);
