@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Macro Sorter Pro</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          <path d="M12 11v6"></path>
+          <path d="M9 14h6"></path>
+        </svg>
+        <span class="brand-name">Macro<span class="highlight">Sorter</span></span>
+      </div>
+      
+      <nav class="nav-menu">
+        <button class="nav-btn active" data-tab="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="9"></rect>
+            <rect x="14" y="3" width="7" height="5"></rect>
+            <rect x="14" y="12" width="7" height="9"></rect>
+            <rect x="3" y="16" width="7" height="5"></rect>
+          </svg>
+          Панель
+        </button>
+        
+        <button class="nav-btn" data-tab="preview">
+          <div class="btn-content-with-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            Превью
+            <span class="badge" id="preview-badge" style="display: none;">0</span>
+          </div>
+        </button>
+        
+        <button class="nav-btn" data-tab="history">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+            <path d="M12 2a10 10 0 0 0-7.54 3.42L3 7"></path>
+            <polyline points="3 3 3 7 7 7"></polyline>
+          </svg>
+          История
+        </button>
+        
+        <button class="nav-btn" data-tab="stats">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          Статистика
+        </button>
+        
+        <button class="nav-btn" data-tab="customization">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 9.273 20.9 6.802 19.122 5C17.2 3.12 14.73 2 12 2C6.47715 2 2 6.47715 2 12C2 14.725 3.12 17.2 5 19.122C6.802 20.9 9.273 22 12 22Z"></path>
+            <circle cx="7.5" cy="10.5" r="1.5" fill="currentColor"></circle>
+            <circle cx="11.5" cy="7.5" r="1.5" fill="currentColor"></circle>
+            <circle cx="16.5" cy="9.5" r="1.5" fill="currentColor"></circle>
+            <circle cx="15.5" cy="14.5" r="1.5" fill="currentColor"></circle>
+          </svg>
+          Кастомизация
+        </button>
+
+        <button class="nav-btn" data-tab="cleaner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+            <polyline points="3 6 5 6 21 6"></polyline>
+          </svg>
+          Очистка
+        </button>
+
+        <button class="nav-btn" data-tab="settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          Настройки
+        </button>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="status-indicator-container">
+          <span class="pulse-dot"></span>
+          <span class="status-text">Служба активна</span>
+        </div>
+      </div>
+    </aside>
+    
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Notification toast system -->
+      <div class="toast-container" id="toast-container"></div>
+      
+      <!-- Header -->
+      <header class="content-header">
+        <div class="header-info">
+          <h1 id="page-title">Панель управления</h1>
+          <p id="page-subtitle">Управление отслеживаемыми папками и автосортировкой</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary" id="btn-clear-history" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; margin-right: 6px; vertical-align: middle;">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Очистить логи
+          </button>
+          <button class="btn btn-primary" id="btn-add-folder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Добавить папку
+          </button>
+        </div>
+      </header>
+      
+      <!-- Content Tabs -->
+      <div class="tabs-container">
+        
+        <!-- Tab 1: Dashboard -->
+        <section class="tab-content active" id="tab-dashboard">
+          <div class="welcome-banner">
+            <div class="welcome-text">
+              <h2>Добро пожаловать в Macro Sorter!</h2>
+              <p>Добавьте папки, за которыми хотите следить (например, «Рабочий стол» или «Загрузки»). Файлы будут автоматически раскладываться по категориям, наводя идеальный порядок.</p>
+            </div>
+            <div class="welcome-stats-summary">
+              <div class="mini-stat">
+                <span class="number" id="quick-total-files">0</span>
+                <span class="label">Файлов отсортировано</span>
+              </div>
+              <div class="mini-stat">
+                <span class="number" id="quick-total-size">0 KB</span>
+                <span class="label">Объем обработанного</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="section-title-wrapper">
+            <h3>Отслеживаемые папки</h3>
+            <span class="folders-count" id="folders-count">0 папок</span>
+          </div>
+          
+          <!-- Watched Folders Grid -->
+          <div class="folders-grid" id="folders-grid">
+            <!-- Dynamic Folder Cards will be rendered here -->
+            <div class="empty-state" id="folders-empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <p>Список отслеживаемых папок пуст</p>
+              <button class="btn btn-secondary btn-sm" id="btn-add-folder-empty">Выбрать папку</button>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Tab 2: Preview Queue -->
+        <section class="tab-content" id="tab-preview">
+          <div class="preview-actions-bar">
+            <div class="selection-info">
+              <label class="custom-checkbox">
+                <input type="checkbox" id="select-all-pending">
+                <span class="checkmark"></span>
+              </label>
+              <span id="selection-text">Выбрано: 0 из 0 файлов</span>
+            </div>
+            <div class="preview-buttons">
+              <button class="btn btn-secondary btn-sm" id="btn-dismiss-selected" disabled>Пропустить</button>
+              <button class="btn btn-primary btn-sm" id="btn-sort-selected" disabled>Сортировать выбранное</button>
+            </div>
+          </div>
+          
+          <div class="pending-list-container">
+            <div class="pending-table-header">
+              <div class="col-check"></div>
+              <div class="col-name">Имя файла</div>
+              <div class="col-source">Папка-источник</div>
+              <div class="col-category">Категория</div>
+              <div class="col-size">Размер</div>
+            </div>
+            
+            <div class="pending-list" id="pending-list">
+              <!-- Dynamic pending rows will be rendered here -->
+              <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M12 8v4"></path>
+                  <path d="M12 16h.01"></path>
+                </svg>
+                <p>Нет файлов, ожидающих ручной сортировки</p>
+                <p class="sub-text">Переведите отслеживаемые папки в режим «Превью», чтобы файлы ожидали здесь вашего подтверждения.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Tab 3: History -->
+        <section class="tab-content" id="tab-history">
+          <div class="history-timeline" id="history-timeline">
+            <!-- Dynamic history cards will be rendered here -->
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <p>История сортировок пуста</p>
+              <p class="sub-text">Здесь будут отображаться выполненные действия, с возможностью отмены.</p>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Tab 4: Statistics -->
+        <section class="tab-content" id="tab-stats">
+          <div class="stats-grid">
+            
+            <!-- Cards for metrics -->
+            <div class="stat-card">
+              <div class="stat-card-title">Всего файлов</div>
+              <div class="stat-card-value" id="stats-total-files">0</div>
+              <div class="stat-card-desc">файлов было рассортировано по папкам</div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-card-title">Освобождено / Размещено</div>
+              <div class="stat-card-value" id="stats-total-size">0 KB</div>
+              <div class="stat-card-desc">общий размер организованных файлов</div>
+            </div>
+            
+            <!-- Visual Chart Card -->
+            <div class="chart-card span-two-cols">
+              <h3>Распределение файлов по категориям</h3>
+              <div class="chart-layout">
+                <!-- SVG Donut Chart -->
+                <div class="donut-chart-container">
+                  <svg width="220" height="220" viewBox="0 0 220 220" class="donut-chart">
+                    <circle cx="110" cy="110" r="85" class="donut-bg"></circle>
+                    <circle cx="110" cy="110" r="85" class="donut-segment" id="donut-segment-main"></circle>
+                  </svg>
+                  <div class="donut-center-text">
+                    <span class="donut-percent" id="donut-center-files">0</span>
+                    <span class="donut-label">файлов</span>
+                  </div>
+                </div>
+                
+                <!-- Category Bars Progress -->
+                <div class="category-bars" id="category-bars-container">
+                  <!-- Dynamic categories with counts and progress bars -->
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </section>
+        
+        <!-- Tab 5: Settings -->
+        <section class="tab-content" id="tab-settings">
+          <div class="settings-card">
+            <h3>Правила распределения расширений</h3>
+            <p class="sub-text">Отредактируйте расширения для каждой категории (через запятую, с точкой). Для применения правил ко всемwatcher-ам нажмите «Сохранить».</p>
+            
+            <form id="settings-rules-form" class="rules-form">
+              <!-- Rules fields will be rendered here dynamically -->
+              <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="btn-reset-rules">Сбросить</button>
+                <button type="submit" class="btn btn-primary" id="btn-save-rules">Сохранить правила</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="settings-card" style="margin-top: 24px;">
+            <h3>Системные настройки</h3>
+            <p class="sub-text">Настройка поведения приложения при запуске и закрытии.</p>
+            
+            <div class="system-settings-form rules-form">
+              <div class="form-group-checkbox" style="margin-bottom: 12px;">
+                <label class="custom-checkbox flex-checkbox" style="display: flex; align-items: center; gap: 10px; width: 100%; height: auto;">
+                  <input type="checkbox" id="chk-autostart">
+                  <span class="checkmark" style="position: static; flex-shrink: 0;"></span>
+                  <span class="checkbox-label" style="font-size: 14px; font-weight: 500; color: var(--text-main);">Запускать при старте системы</span>
+                </label>
+                
+                <!-- Nested Autostart Mode option -->
+                <div id="autostart-mode-container" style="margin-left: 32px; margin-top: 8px; display: none; align-items: center; gap: 10px;">
+                  <span style="font-size: 13px; color: var(--text-muted);">Режим автозапуска:</span>
+                  <div class="custom-select" id="autostart-mode-select" style="position: relative; width: 220px; font-family: inherit;">
+                    <div class="select-trigger" style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-sidebar); border: 1px solid var(--border-color); padding: 5px 10px; border-radius: var(--radius-sm); color: var(--text-main); font-size: 13px; cursor: pointer; transition: var(--transition-fast); user-select: none;">
+                      <span class="select-selected-value">Обычный (открывать окно)</span>
+                      <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px; transition: transform 0.2s ease;">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </div>
+                    <div class="select-options" style="display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: var(--radius-sm); z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); overflow: hidden; animation: slideDown 0.2s ease;">
+                      <div class="select-option active" data-value="normal" style="padding: 8px 12px; font-size: 13px; color: var(--text-main); cursor: pointer; transition: var(--transition-fast);">Обычный (открывать окно)</div>
+                      <div class="select-option" data-value="hidden" style="padding: 8px 12px; font-size: 13px; color: var(--text-main); cursor: pointer; transition: var(--transition-fast);">Свернутый в трей (в фоне)</div>
+                    </div>
+                  </div>
+                  <input type="hidden" id="sel-autostart-mode" value="normal">
+                </div>
+              </div>
+              
+              <div class="form-group-checkbox" style="margin-bottom: 16px;">
+                <label class="custom-checkbox flex-checkbox" style="display: flex; align-items: center; gap: 10px; width: 100%; height: auto;">
+                  <input type="checkbox" id="chk-minimize-to-tray">
+                  <span class="checkmark" style="position: static; flex-shrink: 0;"></span>
+                  <span class="checkbox-label" style="font-size: 14px; font-weight: 500; color: var(--text-main);">Сворачивать в трей при закрытии окна</span>
+                </label>
+              </div>
+              
+              <div class="form-actions">
+                <button type="button" class="btn btn-primary" id="btn-save-system-settings">Сохранить системные настройки</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab 6: Customization -->
+        <section class="tab-content" id="tab-customization">
+          <div class="customization-layout" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: start;">
+            <!-- Left Panel: Controls -->
+            <div class="customization-controls" style="display: flex; flex-direction: column; gap: 24px;">
+              <div class="settings-card">
+                <h3>Готовые цветовые темы</h3>
+                <p class="sub-text" style="margin-bottom: 16px;">Выберите один из предустановленных стилей для мгновенного изменения интерфейса.</p>
+                <div class="theme-presets-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px;">
+                  <button class="theme-preset-btn active" data-preset="space" style="display: flex; flex-direction: column; align-items: center; gap: 8px; background: var(--bg-card); border: 1px solid var(--border-color); padding: 12px; border-radius: var(--radius-md); cursor: pointer; color: var(--text-main); font-family: inherit; transition: var(--transition-fast);">
+                    <div class="preset-preview-capsule" style="display: flex; align-items: center; justify-content: center; gap: 6px; width: 60px; height: 26px; background: rgba(0,0,0,0.25); border-radius: 13px; border: 1px solid rgba(255,255,255,0.05); padding: 2px 6px;">
+                      <span style="display: block; width: 10px; height: 10px; border-radius: 50%; background-color: #090916; border: 1px solid rgba(255,255,255,0.1);"></span>
+                      <span style="display: block; width: 10px; height: 10px; border-radius: 50%; background-color: #1a1a3a; border: 1px solid rgba(255,255,255,0.1);"></span>
+                      <span style="display: block; width: 10px; height: 10px; border-radius: 50%; background-color: #a78bfa; box-shadow: 0 0 6px rgba(167,139,250,0.6);"></span>
+                    </div>
+                    <span class="preset-name" style="font-size: 13px; font-weight: 500;">Space Purple</span>
+                  </button>
+                  <button class="theme-preset-btn" data-preset="midnight" style="display: flex; flex-direction: column; align-items: center; gap: 8px; background: var(--bg-card); border: 1px solid var(--border-color); padding: 12px; border-radius: var(--radius-md); cursor: pointer; color: var(--text-main); font-family: inherit; transition: var(--transition-fast);">
+                    <div class="preset-preview-capsule" style="display: flex; align-items: center; justify-content: center; gap: 6px; width: 60px; height: 26px; background: rgba(0,0,0,0.25); border-radius: 13px; border: 1px solid rgba(255,255,255,0.05); padding: 2px 6px;">
+                      <span style="display: block; width: 10px; height: 10px; border-radius: 50%; background-color: #080c14; border: 1px solid rgba(255,255,255,0.1);"></span>
+                      <span style="display: block; width: 10px; height: 10px; border-radius: 50%; background-color: #1c283c; border: 1px solid rgba(255,255,255,0.1);"></span>
+                      <span style="display: block; width: 10px; height: 10px; border-radius: 50%; background-color: #60a5fa; box-shadow: 0 0 6px rgba(96,165,250,0.6);"></span>
+                    </div>
+                    <span class="preset-name" style="font-size: 13px; font-weight: 500;">Midnight Blue</span>
+                  </button>
+                  <button class="theme-preset-btn" data-preset="emerald" style="display: flex; flex-direction: column; align-items: center; gap: 8px; background: var(--bg-card); border: 1px solid var(--border-color); padding: 12px; border-radius: var(--radius-md); cursor: pointer; color: var(--text-main); font-family: inherit; transition: var(--transition-fast);">
+                    <div class="preset-preview-capsule" style="display: flex; align-items: center; justify-content: center; gap: 6px; width: 60px; height: 26px; background: rgba(0,0,0,0.25); border-radius: 13px; border: 1px solid rgba(255,255,255,0.05); padding: 2px 6px;">
+                      <span style="display: block; width: 10px; height: 10px; border-radius: 50%; background-color: #060b09; border: 1px solid rgba(255,255,255,0.1);"></span>
+                      <span style="display: block; width: 10px; height: 10px; border-radius: 50%; background-color: #1a2c26; border: 1px solid rgba(255,255,255,0.1);"></span>
+                      <span style="display: block; width: 10px; height: 10px; border-radius: 50%; background-color: #34d399; box-shadow: 0 0 6px rgba(52,211,153,0.6);"></span>
+                    </div>
+                    <span class="preset-name" style="font-size: 13px; font-weight: 500;">Emerald Green</span>
+                  </button>
+                  <button class="theme-preset-btn" data-preset="sunset" style="display: flex; flex-direction: column; align-items: center; gap: 8px; background: var(--bg-card); border: 1px solid var(--border-color); padding: 12px; border-radius: var(--radius-md); cursor: pointer; color: var(--text-main); font-family: inherit; transition: var(--transition-fast);">
+                    <div class="preset-preview-capsule" style="display: flex; align-items: center; justify-content: center; gap: 6px; width: 60px; height: 26px; background: rgba(0,0,0,0.25); border-radius: 13px; border: 1px solid rgba(255,255,255,0.05); padding: 2px 6px;">
+                      <span style="display: block; width: 10px; height: 10px; border-radius: 50%; background-color: #0a050f; border: 1px solid rgba(255,255,255,0.1);"></span>
+                      <span style="display: block; width: 10px; height: 10px; border-radius: 50%; background-color: #241238; border: 1px solid rgba(255,255,255,0.1);"></span>
+                      <span style="display: block; width: 10px; height: 10px; border-radius: 50%; background-color: #f472b6; box-shadow: 0 0 6px rgba(244,114,182,0.6);"></span>
+                    </div>
+                    <span class="preset-name" style="font-size: 13px; font-weight: 500;">Neon Sunset</span>
+                  </button>
+                  <button class="theme-preset-btn" data-preset="amber" style="display: flex; flex-direction: column; align-items: center; gap: 8px; background: var(--bg-card); border: 1px solid var(--border-color); padding: 12px; border-radius: var(--radius-md); cursor: pointer; color: var(--text-main); font-family: inherit; transition: var(--transition-fast);">
+                    <div class="preset-preview-capsule" style="display: flex; align-items: center; justify-content: center; gap: 6px; width: 60px; height: 26px; background: rgba(0,0,0,0.25); border-radius: 13px; border: 1px solid rgba(255,255,255,0.05); padding: 2px 6px;">
+                      <span style="display: block; width: 10px; height: 10px; border-radius: 50%; background-color: #0c0a05; border: 1px solid rgba(255,255,255,0.1);"></span>
+                      <span style="display: block; width: 10px; height: 10px; border-radius: 50%; background-color: #221e10; border: 1px solid rgba(255,255,255,0.1);"></span>
+                      <span style="display: block; width: 10px; height: 10px; border-radius: 50%; background-color: #f59e0b; box-shadow: 0 0 6px rgba(245,158,11,0.6);"></span>
+                    </div>
+                    <span class="preset-name" style="font-size: 13px; font-weight: 500;">Cyberpunk Amber</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="settings-card">
+                <h3>Фоновое изображение</h3>
+                <p class="sub-text" style="margin-bottom: 12px;">Загрузите своё изображение, и приложение автоматически подберёт гармоничные цвета интерфейса под него.</p>
+                <div style="display: flex; align-items: center; gap: 16px;">
+                  <button type="button" class="btn btn-secondary" id="btn-select-bg-image" style="flex: 1; height: 38px; justify-content: center;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px; margin-right: 6px;">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                      <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    Выбрать фото
+                  </button>
+                  <button type="button" class="btn btn-secondary" id="btn-remove-bg-image" style="display: none; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #ef4444; height: 38px; justify-content: center; padding: 0 12px;">
+                    Удалить
+                  </button>
+                </div>
+                <div id="bg-image-thumbnail-container" style="display: none; margin-top: 12px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border-color); height: 80px; position: relative;">
+                  <img id="bg-image-thumbnail" src="" style="width: 100%; height: 100%; object-fit: cover;">
+                  <div style="position: absolute; bottom: 4px; right: 6px; background: rgba(0,0,0,0.6); padding: 2px 6px; border-radius: 4px; font-size: 10px; color: #fff;">Активно</div>
+                </div>
+              </div>
+              
+              <div class="settings-card">
+                <h3>Создать свою тему</h3>
+                <p class="sub-text" style="margin-bottom: 16px;">Настройте цвета каждого элемента индивидуально. Изменения сразу отобразятся в превью справа.</p>
+                
+                <div class="color-pickers-list" style="display: flex; flex-direction: column; gap: 14px;">
+                  <div class="color-picker-item" style="display: flex; align-items: center; justify-content: space-between;">
+                    <label for="col-primary" style="font-size: 14px; color: var(--text-muted);">Главный цвет акцентов:</label>
+                    <div class="color-picker-wrapper" style="display: flex; align-items: center; gap: 10px;">
+                      <span class="color-hex-label" id="lbl-primary" style="font-family: monospace; font-size: 13px; color: var(--text-dark);">#8b5cf6</span>
+                      <input type="color" id="col-primary" value="#8b5cf6" style="border: none; width: 36px; height: 36px; border-radius: 6px; cursor: pointer; background: none; padding: 0;">
+                    </div>
+                  </div>
+                  
+                  <div class="color-picker-item" style="display: flex; align-items: center; justify-content: space-between;">
+                    <label for="col-bg-app" style="font-size: 14px; color: var(--text-muted);">Цвет фона приложения:</label>
+                    <div class="color-picker-wrapper" style="display: flex; align-items: center; gap: 10px;">
+                      <span class="color-hex-label" id="lbl-bg-app" style="font-family: monospace; font-size: 13px; color: var(--text-dark);">#070a13</span>
+                      <input type="color" id="col-bg-app" value="#070a13" style="border: none; width: 36px; height: 36px; border-radius: 6px; cursor: pointer; background: none; padding: 0;">
+                    </div>
+                  </div>
+                  
+                  <div class="color-picker-item" style="display: flex; align-items: center; justify-content: space-between;">
+                    <label for="col-bg-sidebar" style="font-size: 14px; color: var(--text-muted);">Цвет боковой панели:</label>
+                    <div class="color-picker-wrapper" style="display: flex; align-items: center; gap: 10px;">
+                      <span class="color-hex-label" id="lbl-bg-sidebar" style="font-family: monospace; font-size: 13px; color: var(--text-dark);">#0b0f19</span>
+                      <input type="color" id="col-bg-sidebar" value="#0b0f19" style="border: none; width: 36px; height: 36px; border-radius: 6px; cursor: pointer; background: none; padding: 0;">
+                    </div>
+                  </div>
+                  
+                  <div class="color-picker-item" style="display: flex; align-items: center; justify-content: space-between;">
+                    <label for="col-bg-card" style="font-size: 14px; color: var(--text-muted);">Цвет карточек и панелей:</label>
+                    <div class="color-picker-wrapper" style="display: flex; align-items: center; gap: 10px;">
+                      <span class="color-hex-label" id="lbl-bg-card" style="font-family: monospace; font-size: 13px; color: var(--text-dark);">#161e34</span>
+                      <input type="color" id="col-bg-card" value="#161e34" style="border: none; width: 36px; height: 36px; border-radius: 6px; cursor: pointer; background: none; padding: 0;">
+                    </div>
+                  </div>
+                  
+                  <div class="color-picker-item" style="display: flex; align-items: center; justify-content: space-between;">
+                    <label for="col-text-main" style="font-size: 14px; color: var(--text-muted);">Цвет главного текста:</label>
+                    <div class="color-picker-wrapper" style="display: flex; align-items: center; gap: 10px;">
+                      <span class="color-hex-label" id="lbl-text-main" style="font-family: monospace; font-size: 13px; color: var(--text-dark);">#f3f4f6</span>
+                      <input type="color" id="col-text-main" value="#f3f4f6" style="border: none; width: 36px; height: 36px; border-radius: 6px; cursor: pointer; background: none; padding: 0;">
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="form-actions" style="margin-top: 24px; display: flex; gap: 12px;">
+                  <button type="button" class="btn btn-secondary" id="btn-reset-theme" style="flex: 1;">Сбросить цвета</button>
+                  <button type="button" class="btn btn-primary" id="btn-save-theme" style="flex: 1.5;">Применить и сохранить</button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Right Panel: Live Preview -->
+            <div class="customization-preview" style="position: sticky; top: 0;">
+              <div class="settings-card">
+                <h3>Живой предпросмотр</h3>
+                <p class="sub-text" style="margin-bottom: 16px;">Посмотрите, как новая тема выглядит на макете приложения.</p>
+                
+                <!-- Mockup App Frame -->
+                <div class="theme-preview-frame" id="theme-preview-frame" style="display: flex; height: 280px; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-color); font-family: inherit; font-size: 11px; background-color: var(--bg-app-preview, #070a13); color: var(--text-main-preview, #f3f4f6);">
+                  <!-- Sidebar Mock -->
+                  <div class="mock-sidebar" style="width: 80px; background-color: var(--bg-sidebar-preview, #0b0f19); border-right: 1px solid rgba(255,255,255,0.05); padding: 10px; display: flex; flex-direction: column; gap: 15px;">
+                    <div class="mock-brand" style="display: flex; align-items: center; gap: 4px; font-weight: bold; color: var(--text-main-preview, #f3f4f6); font-size: 9px;">
+                      <div class="mock-brand-icon" style="width: 10px; height: 10px; border-radius: 2px; background-color: var(--primary-preview, #8b5cf6);"></div>
+                      <span>Macro</span>
+                    </div>
+                    <div class="mock-nav" style="display: flex; flex-direction: column; gap: 6px;">
+                      <div class="mock-nav-item active" style="background-color: rgba(255,255,255,0.05); border-left: 2px solid var(--primary-preview, #8b5cf6); padding: 4px 6px; border-radius: 2px; font-weight: 500;">Панель</div>
+                      <div class="mock-nav-item" style="padding: 4px 6px; opacity: 0.5;">Превью</div>
+                      <div class="mock-nav-item" style="padding: 4px 6px; opacity: 0.5;">Опции</div>
+                    </div>
+                  </div>
+                  
+                  <!-- Main Body Mock -->
+                  <div class="mock-body" style="flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 10px; background-color: var(--bg-app-preview, #070a13);">
+                    <div class="mock-header" style="display: flex; justify-content: space-between; align-items: center;">
+                      <span style="font-weight: 600; font-size: 12px;">Панель управления</span>
+                      <div class="mock-header-btn" style="background-color: var(--primary-preview, #8b5cf6); color: #fff; padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 10px; cursor: default; box-shadow: 0 0 8px var(--primary-glow-preview, rgba(139,92,246,0.3));">Добавить</div>
+                    </div>
+                    
+                    <div class="mock-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                      <!-- Card 1 -->
+                      <div class="mock-card" style="background-color: var(--bg-card-preview, rgba(22,30,52,0.5)); border: 1px solid rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; display: flex; flex-direction: column; gap: 6px;">
+                        <div class="mock-card-header" style="display: flex; align-items: center; gap: 5px;">
+                          <div class="mock-card-icon" style="width: 14px; height: 12px; background-color: var(--primary-preview, #8b5cf6); border-radius: 2px; opacity: 0.8;"></div>
+                          <div>
+                            <div style="font-weight: 600;">Рабочий стол</div>
+                            <div style="opacity: 0.4; font-size: 8px;">C:\Users\Desktop</div>
+                          </div>
+                        </div>
+                        <div class="mock-card-toggle" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 4px; font-size: 9px; opacity: 0.8;">
+                          <span>Автосортировка</span>
+                          <div class="mock-toggle" style="width: 18px; height: 10px; border-radius: 5px; background-color: var(--primary-preview, #8b5cf6); position: relative;"><span style="position: absolute; right: 2px; top: 2px; width: 6px; height: 6px; border-radius: 50%; background: #fff;"></span></div>
+                        </div>
+                      </div>
+                      
+                      <!-- Card 2 (Stats Donut Mock) -->
+                      <div class="mock-card mock-stats-card" style="background-color: var(--bg-card-preview, rgba(22,30,52,0.5)); border: 1px solid rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; flex-direction: column; gap: 2px;">
+                          <div style="font-weight: 600;">Всего</div>
+                          <div style="font-size: 16px; font-weight: bold; color: var(--primary-preview, #8b5cf6);">246</div>
+                          <div style="opacity: 0.4; font-size: 8px;">файлов</div>
+                        </div>
+                        <!-- Mini SVG chart mock -->
+                        <div style="width: 32px; height: 32px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.05); border-top-color: var(--primary-preview, #8b5cf6); transform: rotate(45deg);"></div>
+                      </div>
+                    </div>
+                    
+                    <div class="mock-alert" style="background-color: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.05); border-left: 3px solid var(--primary-preview, #8b5cf6); padding: 6px 10px; border-radius: 4px; opacity: 0.8; font-size: 9px;">
+                      <strong>Служба активна:</strong> фоновое отслеживание запущено
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Tab 6: Smart Cleaner -->
+        <section class="tab-content" id="tab-cleaner">
+          <div class="cleaner-grid" style="display: grid; grid-template-columns: 320px 1fr; gap: 24px; align-items: start;">
+            
+            <!-- Left Panel: Scanner Settings & Stats -->
+            <div class="cleaner-settings-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
+              <h3 style="margin-top: 0; margin-bottom: 8px; font-size: 16px; font-weight: 600; color: var(--text-main);">Параметры очистки</h3>
+              <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.4;">Сканирование отслеживаемых папок на наличие давно неиспользуемых файлов.</p>
+              
+              <!-- Threshold Select -->
+              <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Не использовался более:</label>
+                <div class="custom-select" id="cleaner-threshold-select" style="position: relative; width: 100%;">
+                  <div class="select-trigger" style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-sidebar); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: var(--radius-sm); color: var(--text-main); font-size: 13px; cursor: pointer; transition: var(--transition-fast); user-select: none;">
+                    <span class="select-selected-value">14 дней</span>
+                    <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px; transition: transform 0.2s ease;">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
+                  <div class="select-options" style="display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: var(--radius-sm); z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); overflow: hidden; animation: slideDown 0.2s ease;">
+                    <div class="select-option" data-value="7" style="padding: 8px 12px; font-size: 13px; color: var(--text-main); cursor: pointer; transition: var(--transition-fast);">7 дней</div>
+                    <div class="select-option active" data-value="14" style="padding: 8px 12px; font-size: 13px; color: var(--text-main); cursor: pointer; transition: var(--transition-fast);">14 дней</div>
+                    <div class="select-option" data-value="30" style="padding: 8px 12px; font-size: 13px; color: var(--text-main); cursor: pointer; transition: var(--transition-fast);">30 дней</div>
+                    <div class="select-option" data-value="90" style="padding: 8px 12px; font-size: 13px; color: var(--text-main); cursor: pointer; transition: var(--transition-fast);">90 дней</div>
+                  </div>
+                </div>
+                <input type="hidden" id="sel-cleaner-threshold" value="14">
+              </div>
+
+              <!-- Action Select -->
+              <div style="margin-bottom: 24px;">
+                <label style="display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Действие при очистке:</label>
+                <div class="custom-select" id="cleaner-action-select" style="position: relative; width: 100%;">
+                  <div class="select-trigger" style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-sidebar); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: var(--radius-sm); color: var(--text-main); font-size: 13px; cursor: pointer; transition: var(--transition-fast); user-select: none;">
+                    <span class="select-selected-value">Удалить в корзину (безопасно)</span>
+                    <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px; transition: transform 0.2s ease;">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
+                  <div class="select-options" style="display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: var(--radius-sm); z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); overflow: hidden; animation: slideDown 0.2s ease;">
+                    <div class="select-option active" data-value="delete" style="padding: 8px 12px; font-size: 13px; color: var(--text-main); cursor: pointer; transition: var(--transition-fast);">Удалить в корзину (безопасно)</div>
+                    <div class="select-option" data-value="destroy" style="padding: 8px 12px; font-size: 13px; color: var(--text-main); cursor: pointer; transition: var(--transition-fast);">Удалить безвозвратно (навсегда)</div>
+                    <div class="select-option" data-value="archive" style="padding: 8px 12px; font-size: 13px; color: var(--text-main); cursor: pointer; transition: var(--transition-fast);">Переместить в архив</div>
+                  </div>
+                </div>
+                <input type="hidden" id="sel-cleaner-action" value="delete">
+              </div>
+
+              <!-- Start Button -->
+              <button class="btn btn-primary" id="btn-start-clean-scan" style="width: 100%; justify-content: center; height: 42px; margin-bottom: 24px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px; margin-right: 8px;">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                Начать сканирование
+              </button>
+
+              <!-- Space Saved Ring Visualizer -->
+              <div class="cleaner-visualizer-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; border-top: 1px solid var(--border-color); padding-top: 24px;">
+                <div style="position: relative; width: 140px; height: 140px;">
+                  <svg style="transform: rotate(-90deg); width: 100%; height: 100%;">
+                    <circle cx="70" cy="70" r="58" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="8"></circle>
+                    <circle id="cleaner-progress-ring" cx="70" cy="70" r="58" fill="none" stroke="var(--primary)" stroke-width="8" stroke-dasharray="364.4" stroke-dashoffset="364.4" style="transition: stroke-dashoffset 0.8s ease; stroke-linecap: round; filter: drop-shadow(0 0 6px var(--primary-glow));"></circle>
+                  </svg>
+                  <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+                    <span id="cleaner-percent" style="font-size: 20px; font-weight: bold; color: var(--text-main);">0%</span>
+                    <span style="font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px;">Готово к скану</span>
+                  </div>
+                </div>
+                <div style="margin-top: 16px; text-align: center;">
+                  <div style="font-size: 13px; color: var(--text-muted);">Найдено неиспользуемых файлов:</div>
+                  <div id="lbl-cleaner-found-count" style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-top: 2px;">0 файлов</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Panel: Results list -->
+            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); overflow: hidden; display: flex; flex-direction: column; min-height: 480px;">
+              <!-- Header Actions -->
+              <div class="cleaner-results-header" style="display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.01);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <label class="custom-checkbox" id="lbl-clean-select-all" style="display: none;">
+                    <input type="checkbox" id="chk-clean-select-all">
+                    <span class="checkmark"></span>
+                  </label>
+                  <span id="lbl-clean-selection-text" style="font-size: 13px; color: var(--text-muted);">Запустите сканирование для поиска файлов.</span>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="btn-execute-clean" disabled style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #ef4444; font-weight: 500;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; margin-right: 6px; display: inline-block; vertical-align: middle;">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                  </svg>
+                  Очистить выбранное
+                </button>
+              </div>
+
+              <!-- Column headers -->
+              <div class="cleaner-table-header" id="cleaner-table-header" style="display: none; grid-template-columns: 40px 1fr 120px 130px 90px 45px; padding: 10px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 600;">
+                <div></div>
+                <div>Имя файла</div>
+                <div>Папка</div>
+                <div>Простой</div>
+                <div style="text-align: right; padding-right: 10px;">Размер</div>
+                <div style="text-align: center;">Открыть</div>
+              </div>
+
+              <!-- Files list table body -->
+              <div style="flex: 1; overflow-y: auto; max-height: 520px;" id="cleaner-results-list">
+                <!-- Empty State -->
+                <div class="empty-state" style="padding: 60px 24px; text-align: center;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 48px; height: 48px; opacity: 0.3; margin-bottom: 16px; display: inline-block;">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <p style="font-size: 14px; color: var(--text-main); margin-bottom: 8px;">Список файлов пуст</p>
+                  <p style="font-size: 13px; color: var(--text-muted); max-width: 320px; margin: 0 auto;">Настройте срок давности слева и запустите сканирование, чтобы обнаружить файлы, занимающие место.</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+        
+      </div>
+    </main>
+    
+  </div>
+  
+  <!-- Custom Glassmorphic Confirmation Modal -->
+  <div class="custom-modal-overlay" id="confirm-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.25s ease;">
+    <div class="custom-modal-card" style="background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: var(--radius-md); width: 420px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); transform: scale(0.9); transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); overflow: hidden;">
+      <div class="custom-modal-header" style="display: flex; align-items: center; gap: 10px; padding: 20px 24px; border-bottom: 1px solid var(--border-color); background: rgba(255, 255, 255, 0.02);">
+        <svg class="modal-warning-icon" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" style="width: 24px; height: 24px; flex-shrink: 0;">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <h3 id="confirm-modal-title" style="margin: 0; font-size: 16px; font-weight: 600; color: var(--text-main);">Подтверждение действия</h3>
+      </div>
+      <div class="custom-modal-body" style="padding: 24px; font-size: 14px; line-height: 1.5; color: var(--text-muted);">
+        <p id="confirm-modal-message" style="margin: 0;"></p>
+      </div>
+      <div class="custom-modal-footer" style="display: flex; justify-content: flex-end; gap: 12px; padding: 16px 24px; background: rgba(0, 0, 0, 0.2); border-top: 1px solid var(--border-color);">
+        <button class="btn btn-secondary" id="confirm-modal-cancel" style="padding: 8px 16px; font-size: 13px;">Отмена</button>
+        <button class="btn btn-danger" id="confirm-modal-ok" style="background: #ef4444; color: white; border: none; padding: 8px 16px; font-size: 13px; border-radius: var(--radius-sm); cursor: pointer; font-weight: 500; transition: var(--transition-fast);">Очистить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Image Preview Tooltip -->
+  <div id="cleaner-preview-tooltip" style="display: none; position: fixed; pointer-events: none; z-index: 2000; background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); max-width: 280px; max-height: 280px; overflow: hidden; opacity: 0; transition: opacity 0.15s ease;">
+    <div id="cleaner-preview-loading" style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 10px;">Загрузка превью...</div>
+    <img id="cleaner-preview-img" src="" style="max-width: 260px; max-height: 260px; border-radius: 4px; display: none; object-fit: contain;">
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
