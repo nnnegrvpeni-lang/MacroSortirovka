@@ -165,11 +165,33 @@ if (!gotTheLock) {
   app.whenReady().then(() => {
     protocol.handle('local-bg', (request) => {
       try {
-        const fileUrl = request.url.replace('local-bg://', 'file:///');
-        return net.fetch(fileUrl);
+        const urlPath = decodeURIComponent(request.url.replace('local-bg://', ''));
+        const normalizedPath = path.normalize(urlPath);
+        
+        if (fs.existsSync(normalizedPath)) {
+          const data = fs.readFileSync(normalizedPath);
+          const ext = path.extname(normalizedPath).toLowerCase();
+          const mimeTypes = {
+            '.jpg': 'image/jpeg',
+            '.jpeg': 'image/jpeg',
+            '.jfif': 'image/jpeg',
+            '.png': 'image/png',
+            '.gif': 'image/gif',
+            '.webp': 'image/webp',
+            '.bmp': 'image/bmp',
+            '.ico': 'image/x-icon'
+          };
+          const mime = mimeTypes[ext] || 'image/jpeg';
+          return new Response(data, {
+            headers: { 'content-type': mime }
+          });
+        } else {
+          console.error('File not found for local-bg:', normalizedPath);
+          return new Response('Not Found', { status: 404 });
+        }
       } catch (e) {
         console.error('Failed to resolve local-bg url:', e);
-        return new Response('Not Found', { status: 404 });
+        return new Response('Error', { status: 500 });
       }
     });
 
