@@ -197,12 +197,22 @@ if (!gotTheLock) {
   }
 
   // Auto-updater setup and listeners
-  autoUpdater.on('update-available', () => {
-    sendToRenderer('update-available');
+  autoUpdater.autoDownload = false;
+
+  autoUpdater.on('update-available', (info) => {
+    sendToRenderer('update-available', info.version);
+  });
+
+  autoUpdater.on('download-progress', (progressObj) => {
+    sendToRenderer('update-progress', Math.round(progressObj.percent));
   });
 
   autoUpdater.on('update-downloaded', () => {
     sendToRenderer('update-downloaded');
+  });
+
+  ipcMain.on('download-update', () => {
+    autoUpdater.downloadUpdate().catch(err => console.error('Failed to download update:', err));
   });
 
   ipcMain.on('install-update', () => {

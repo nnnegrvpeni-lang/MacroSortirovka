@@ -35,6 +35,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onFileAutosorted: (callback) => ipcRenderer.on('file-autosorted', (event, value) => callback(value)),
   
   installUpdate: () => ipcRenderer.send('install-update'),
-  onUpdateAvailable: (callback) => ipcRenderer.on('update-available', () => callback()),
-  onUpdateDownloaded: (callback) => ipcRenderer.on('update-downloaded', () => callback())
+  downloadUpdate: () => ipcRenderer.send('download-update'),
+  onUpdateAvailable: (callback) => ipcRenderer.on('update-available', (event, version) => callback(version)),
+  onUpdateDownloaded: (callback) => ipcRenderer.on('update-downloaded', () => callback()),
+  onUpdateProgress: (callback) => ipcRenderer.on('update-progress', (event, percent) => callback(percent))
 });

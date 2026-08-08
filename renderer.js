@@ -255,19 +255,119 @@ function setupWatchersListeners() {
   });
 
   // Listen for auto-updater events
-  window.electronAPI.onUpdateAvailable(() => {
-    showToast('Обновление доступно', 'Найдена новая версия! Скачивание обновления запущено в фоне...', 'info');
+  window.electronAPI.onUpdateAvailable((version) => {
+    let modal = document.getElementById('update-prompt-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'update-prompt-modal';
+      modal.className = 'custom-modal-overlay';
+      modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10000; opacity: 0; transition: opacity 0.3s ease;';
+      
+      modal.innerHTML = `
+        <div class="custom-modal-card" style="width: 420px; background: var(--bg-card); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); backdrop-filter: blur(10px); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <div style="background: rgba(139,92,246,0.15); color: var(--primary); border-radius: 10px; padding: 8px; display: flex; align-items: center; justify-content: center;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+              </svg>
+            </div>
+            <h3 style="font-size: 18px; font-weight: 700; color: var(--text-main); margin: 0;">Доступно обновление</h3>
+          </div>
+          <p id="update-modal-text" style="font-size: 14px; color: var(--text-muted); line-height: 1.5; margin-bottom: 24px;"></p>
+          
+          <!-- Progress bar -->
+          <div id="update-progress-container" style="display: none; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">
+              <span>Загрузка файлов...</span>
+              <span id="update-progress-percent">0%</span>
+            </div>
+            <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden;">
+              <div id="update-progress-bar" style="width: 0%; height: 100%; background: var(--primary); transition: width 0.1s ease; box-shadow: 0 0 8px var(--primary-glow);"></div>
+            </div>
+          </div>
+
+          <div class="modal-buttons" id="update-modal-buttons" style="display: flex; justify-content: flex-end; gap: 12px;">
+            <button class="btn btn-secondary" id="btn-update-later" style="padding: 10px 18px;">Позже</button>
+            <button class="btn btn-primary" id="btn-update-download" style="padding: 10px 18px; background: var(--primary); box-shadow: 0 0 10px var(--primary-glow);">Скачать</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      // Event listener for Later
+      document.getElementById('btn-update-later').addEventListener('click', () => {
+        modal.style.opacity = '0';
+        modal.querySelector('.custom-modal-card').style.transform = 'scale(0.9)';
+        setTimeout(() => { modal.style.display = 'none'; }, 300);
+      });
+
+      // Event listener for Download
+      document.getElementById('btn-update-download').addEventListener('click', () => {
+        document.getElementById('btn-update-download').disabled = true;
+        document.getElementById('btn-update-later').style.display = 'none';
+        document.getElementById('update-progress-container').style.display = 'block';
+        document.getElementById('btn-update-download').textContent = 'Скачивание...';
+        window.electronAPI.downloadUpdate();
+      });
+    }
+
+    // Reset UI state in case it was opened before
+    document.getElementById('update-modal-text').textContent = `Обнаружена новая версия Macro Sorter v${version}. Хотите скачать её и обновить приложение?`;
+    document.getElementById('update-progress-container').style.display = 'none';
+    document.getElementById('update-progress-bar').style.width = '0%';
+    document.getElementById('update-progress-percent').textContent = '0%';
+    document.getElementById('update-modal-buttons').style.display = 'flex';
+    document.getElementById('btn-update-later').style.display = 'inline-flex';
+    document.getElementById('btn-update-download').disabled = false;
+    document.getElementById('btn-update-download').textContent = 'Скачать';
+    document.getElementById('btn-update-download').style.display = 'inline-flex';
+
+    // Show modal
+    modal.style.display = 'flex';
+    modal.offsetHeight;
+    modal.style.opacity = '1';
+    modal.querySelector('.custom-modal-card').style.transform = 'scale(1)';
   });
 
-  window.electronAPI.onUpdateDownloaded(async () => {
-    const confirmUpdate = await showConfirm(
-      'Доступно обновление',
-      'Новая версия Macro Sorter успешно скачана! Установить и перезапустить приложение сейчас?',
-      'Обновить',
-      'Позже'
-    );
-    if (confirmUpdate) {
-      window.electronAPI.installUpdate();
+  window.electronAPI.onUpdateProgress((percent) => {
+    const bar = document.getElementById('update-progress-bar');
+    const label = document.getElementById('update-progress-percent');
+    if (bar && label) {
+      bar.style.width = `${percent}%`;
+      label.textContent = `${percent}%`;
+    }
+  });
+
+  window.electronAPI.onUpdateDownloaded(() => {
+    // Modify prompt to let user restart
+    const modalText = document.getElementById('update-modal-text');
+    if (modalText) {
+      modalText.textContent = 'Новая версия успешно скачана! Установить и перезапустить приложение сейчас?';
+    }
+    
+    const progressContainer = document.getElementById('update-progress-container');
+    if (progressContainer) progressContainer.style.display = 'none';
+
+    const btnDownload = document.getElementById('btn-update-download');
+    if (btnDownload) {
+      btnDownload.disabled = false;
+      btnDownload.textContent = 'Установить';
+      btnDownload.style.display = 'inline-flex';
+      
+      // Remove old listeners and replace with quitAndInstall trigger
+      const newBtn = btnDownload.cloneNode(true);
+      btnDownload.parentNode.replaceChild(newBtn, btnDownload);
+      
+      newBtn.addEventListener('click', () => {
+        window.electronAPI.installUpdate();
+      });
+    }
+
+    const btnLater = document.getElementById('btn-update-later');
+    if (btnLater) {
+      btnLater.style.display = 'inline-flex';
+      btnLater.textContent = 'Позже';
     }
   });
 }
