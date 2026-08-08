@@ -6,7 +6,6 @@
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder",
-    "postdist": "node inject-github-url.js",
     "pack": "electron-builder --dir"
   },
   "dependencies": {
@@ -21,8 +20,9 @@
     "appId": "com.macro.sorter",
     "productName": "Macro Sorter",
     "publish": {
-      "provider": "generic",
-      "url": "https://macro-sorter-updates.pages.dev"
+      "provider": "github",
+      "owner": "nnnegrvpeni-lang",
+      "repo": "MacroSortirovka"
     },
     "win": {
       "icon": "icon.png",
