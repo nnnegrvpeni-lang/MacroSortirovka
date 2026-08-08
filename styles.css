@@ -57,8 +57,8 @@ body {
                     var(--bg-image-url, none),
                     radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
                     radial-gradient(circle at 10% 80%, rgba(6, 182, 212, 0.08) 0%, transparent 50%);
-  background-size: cover;
-  background-position: center;
+  background-size: var(--bg-image-size, cover);
+  background-position: var(--bg-image-x, center) var(--bg-image-y, center);
   background-repeat: no-repeat;
   background-color: var(--bg-app);
 }
@@ -254,13 +254,13 @@ body {
   background-color: var(--primary);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 14px var(--primary-glow);
 }
 
 .btn-primary:hover {
   background-color: var(--primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 6px 20px var(--primary-glow);
 }
 
 .btn-secondary {
@@ -377,7 +377,7 @@ body {
   font-size: 28px;
   font-weight: 700;
   color: var(--primary);
-  text-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+  text-shadow: 0 0 10px var(--primary-glow);
 }
 
 .mini-stat .label {
@@ -935,7 +935,7 @@ input:checked + .slider:before {
   font-weight: 700;
   color: var(--primary);
   margin: 12px 0 6px 0;
-  text-shadow: 0 0 15px rgba(139, 92, 246, 0.25);
+  text-shadow: 0 0 15px var(--primary-glow);
 }
 
 .stat-card-desc {

@@ -194,11 +194,53 @@ async function loadAppData() {
       const rangeBgDimming = document.getElementById('range-bg-dimming');
       const lblBgDimming = document.getElementById('lbl-bg-dimming');
       const bgDimmingContainer = document.getElementById('bg-dimming-container');
+      const rangeBgX = document.getElementById('range-bg-x');
+      const lblBgX = document.getElementById('lbl-bg-x');
+      const rangeBgY = document.getElementById('range-bg-y');
+      const lblBgY = document.getElementById('lbl-bg-y');
+      const selBgSize = document.getElementById('sel-bg-size');
+      
       if (rangeBgDimming && lblBgDimming && bgDimmingContainer) {
         const dimVal = currentTheme.bgDimming !== undefined ? currentTheme.bgDimming : 85;
         rangeBgDimming.value = dimVal;
         lblBgDimming.textContent = `${dimVal}%`;
         bgDimmingContainer.style.display = bgImage ? 'flex' : 'none';
+        
+        // Sync X Position
+        const xVal = currentTheme.bgPositionX !== undefined ? currentTheme.bgPositionX : 50;
+        if (rangeBgX && lblBgX) {
+          rangeBgX.value = xVal;
+          lblBgX.textContent = `${xVal}%`;
+        }
+        
+        // Sync Y Position
+        const yVal = currentTheme.bgPositionY !== undefined ? currentTheme.bgPositionY : 50;
+        if (rangeBgY && lblBgY) {
+          rangeBgY.value = yVal;
+          lblBgY.textContent = `${yVal}%`;
+        }
+        
+        // Sync Size Select
+        const sizeVal = currentTheme.bgSize || 'cover';
+        if (selBgSize) {
+          selBgSize.value = sizeVal;
+          
+          const customSelect = document.getElementById('bg-size-select');
+          if (customSelect) {
+            const selectedText = customSelect.querySelector('.select-selected-value');
+            const optionElements = customSelect.querySelectorAll('.select-option');
+            if (selectedText && optionElements.length > 0) {
+              optionElements.forEach(opt => {
+                if (opt.getAttribute('data-value') === sizeVal) {
+                  opt.classList.add('active');
+                  selectedText.textContent = opt.textContent;
+                } else {
+                  opt.classList.remove('active');
+                }
+              });
+            }
+          }
+        }
       }
       
       // Set active preset button
@@ -1191,13 +1233,19 @@ function initEventHandlers() {
         
         const dimVal = document.getElementById('range-bg-dimming') ? parseInt(document.getElementById('range-bg-dimming').value, 10) : 85;
         const enableGlowVal = document.getElementById('chk-enable-glow') ? document.getElementById('chk-enable-glow').checked : true;
+        const bgSizeVal = document.getElementById('sel-bg-size') ? document.getElementById('sel-bg-size').value : 'cover';
+        const bgXVal = document.getElementById('range-bg-x') ? parseInt(document.getElementById('range-bg-x').value, 10) : 50;
+        const bgYVal = document.getElementById('range-bg-y') ? parseInt(document.getElementById('range-bg-y').value, 10) : 50;
         
         sysSettings.theme = {
           preset: presetId,
           colors: themeColors,
           bgImage: currentBgImage,
           bgDimming: dimVal,
-          enableGlow: enableGlowVal
+          enableGlow: enableGlowVal,
+          bgSize: bgSizeVal,
+          bgPositionX: bgXVal,
+          bgPositionY: bgYVal
         };
         
         await window.electronAPI.saveSystemSettings(sysSettings);
@@ -1325,23 +1373,83 @@ function initEventHandlers() {
     });
   }
 
-  // Background Dimming Range Input Listener
+  // Background Dimming, Size and Position Listeners
   const rangeBgDimming = document.getElementById('range-bg-dimming');
   const lblBgDimming = document.getElementById('lbl-bg-dimming');
+  const rangeBgX = document.getElementById('range-bg-x');
+  const lblBgX = document.getElementById('lbl-bg-x');
+  const rangeBgY = document.getElementById('range-bg-y');
+  const lblBgY = document.getElementById('lbl-bg-y');
+  const selBgSize = document.getElementById('sel-bg-size');
+
+  const updateBgThemeSettings = async (updates) => {
+    const sysSettings = await window.electronAPI.getSystemSettings();
+    if (sysSettings.theme) {
+      sysSettings.theme = {
+        ...sysSettings.theme,
+        ...updates
+      };
+      await window.electronAPI.saveSystemSettings(sysSettings);
+      applyTheme(sysSettings.theme);
+      
+      const bgUrl = sysSettings.theme.bgImage ? `local-bg://${sysSettings.theme.bgImage.replace(/\\/g, '/')}` : null;
+      updatePreview(sysSettings.theme.colors, bgUrl);
+    }
+  };
+
   if (rangeBgDimming && lblBgDimming) {
-    rangeBgDimming.addEventListener('input', async (e) => {
+    rangeBgDimming.addEventListener('input', (e) => {
       const value = e.target.value;
       lblBgDimming.textContent = `${value}%`;
-      
-      const sysSettings = await window.electronAPI.getSystemSettings();
-      if (sysSettings.theme) {
-        sysSettings.theme.bgDimming = parseInt(value, 10);
-        await window.electronAPI.saveSystemSettings(sysSettings);
-        applyTheme(sysSettings.theme);
+      updateBgThemeSettings({ bgDimming: parseInt(value, 10) });
+    });
+  }
+
+  if (rangeBgX && lblBgX) {
+    rangeBgX.addEventListener('input', (e) => {
+      const value = e.target.value;
+      lblBgX.textContent = `${value}%`;
+      updateBgThemeSettings({ bgPositionX: parseInt(value, 10) });
+    });
+  }
+
+  if (rangeBgY && lblBgY) {
+    rangeBgY.addEventListener('input', (e) => {
+      const value = e.target.value;
+      lblBgY.textContent = `${value}%`;
+      updateBgThemeSettings({ bgPositionY: parseInt(value, 10) });
+    });
+  }
+
+  // Custom Select Dropdown listener for bg size select
+  const bgSizeSelect = document.getElementById('bg-size-select');
+  if (bgSizeSelect) {
+    const trigger = bgSizeSelect.querySelector('.select-trigger');
+    const optionsContainer = bgSizeSelect.querySelector('.select-options');
+    const selectedText = bgSizeSelect.querySelector('.select-selected-value');
+    const optionElements = bgSizeSelect.querySelectorAll('.select-option');
+    
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.querySelectorAll('.select-options').forEach(c => {
+        if (c !== optionsContainer) c.style.display = 'none';
+      });
+      optionsContainer.style.display = optionsContainer.style.display === 'block' ? 'none' : 'block';
+    });
+    
+    optionElements.forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const value = opt.getAttribute('data-value');
+        selectedText.textContent = opt.textContent;
+        if (selBgSize) selBgSize.value = value;
         
-        const bgUrl = sysSettings.theme.bgImage ? `local-bg://${sysSettings.theme.bgImage.replace(/\\/g, '/')}` : null;
-        updatePreview(sysSettings.theme.colors, bgUrl);
-      }
+        optionElements.forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        
+        optionsContainer.style.display = 'none';
+        updateBgThemeSettings({ bgSize: value });
+      });
     });
   }
 
@@ -1977,8 +2085,15 @@ function applyTheme(theme) {
     const startOpacity = (dimVal / 100) * 0.95;
     const endOpacity = (dimVal / 100) * 1.0;
     
+    const bgSize = theme.bgSize || 'cover';
+    const bgX = theme.bgPositionX !== undefined ? `${theme.bgPositionX}%` : '50%';
+    const bgY = theme.bgPositionY !== undefined ? `${theme.bgPositionY}%` : '50%';
+    
     root.style.setProperty('--bg-image-url', `url("${bgUrl}")`);
     root.style.setProperty('--bg-image-overlay', `linear-gradient(rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${startOpacity}), rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${endOpacity}))`);
+    root.style.setProperty('--bg-image-size', bgSize);
+    root.style.setProperty('--bg-image-x', bgX);
+    root.style.setProperty('--bg-image-y', bgY);
     
     if (thumbnail && thumbnailContainer && removeBtn) {
       thumbnail.src = bgUrl;
@@ -1993,10 +2108,50 @@ function applyTheme(theme) {
         rangeBgDimming.value = dimVal;
         lblBgDimming.textContent = `${dimVal}%`;
       }
+      
+      const rangeBgX = document.getElementById('range-bg-x');
+      const lblBgX = document.getElementById('lbl-bg-x');
+      const xVal = theme.bgPositionX !== undefined ? theme.bgPositionX : 50;
+      if (rangeBgX && lblBgX) {
+        rangeBgX.value = xVal;
+        lblBgX.textContent = `${xVal}%`;
+      }
+
+      const rangeBgY = document.getElementById('range-bg-y');
+      const lblBgY = document.getElementById('lbl-bg-y');
+      const yVal = theme.bgPositionY !== undefined ? theme.bgPositionY : 50;
+      if (rangeBgY && lblBgY) {
+        rangeBgY.value = yVal;
+        lblBgY.textContent = `${yVal}%`;
+      }
+
+      const selBgSize = document.getElementById('sel-bg-size');
+      const sizeVal = theme.bgSize || 'cover';
+      if (selBgSize) {
+        selBgSize.value = sizeVal;
+        const customSelect = document.getElementById('bg-size-select');
+        if (customSelect) {
+          const selectedText = customSelect.querySelector('.select-selected-value');
+          const optionElements = customSelect.querySelectorAll('.select-option');
+          if (selectedText && optionElements.length > 0) {
+            optionElements.forEach(opt => {
+              if (opt.getAttribute('data-value') === sizeVal) {
+                opt.classList.add('active');
+                selectedText.textContent = opt.textContent;
+              } else {
+                opt.classList.remove('active');
+              }
+            });
+          }
+        }
+      }
     }
   } else {
     root.style.removeProperty('--bg-image-url');
     root.style.removeProperty('--bg-image-overlay');
+    root.style.removeProperty('--bg-image-size');
+    root.style.removeProperty('--bg-image-x');
+    root.style.removeProperty('--bg-image-y');
     
     if (thumbnail && thumbnailContainer && removeBtn) {
       thumbnail.src = '';
@@ -2029,10 +2184,22 @@ function updatePreview(colors, bgImageUrl = null) {
   const startOpacity = (dimVal / 100) * 0.95;
   const endOpacity = (dimVal / 100) * 1.0;
   
+  const selBgSize = document.getElementById('sel-bg-size');
+  const bgSize = selBgSize ? selBgSize.value : 'cover';
+  
+  const rangeBgX = document.getElementById('range-bg-x');
+  const bgX = rangeBgX ? `${rangeBgX.value}%` : '50%';
+  
+  const rangeBgY = document.getElementById('range-bg-y');
+  const bgY = rangeBgY ? `${rangeBgY.value}%` : '50%';
+
   if (bgImageUrl) {
     frame.style.backgroundImage = `linear-gradient(rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${startOpacity}), rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${endOpacity})), url("${bgImageUrl}")`;
-    frame.style.backgroundSize = 'cover';
-    frame.style.backgroundPosition = 'center';
+    frame.style.setProperty('--bg-image-size', bgSize);
+    frame.style.setProperty('--bg-image-x', bgX);
+    frame.style.setProperty('--bg-image-y', bgY);
+    frame.style.backgroundSize = bgSize;
+    frame.style.backgroundPosition = `${bgX} ${bgY}`;
   } else {
     frame.style.backgroundImage = 'none';
   }

@@ -444,12 +444,55 @@
                   <img id="bg-image-thumbnail" src="" style="width: 100%; height: 100%; object-fit: cover;">
                   <div style="position: absolute; bottom: 4px; right: 6px; background: rgba(0,0,0,0.6); padding: 2px 6px; border-radius: 4px; font-size: 10px; color: #fff;">Активно</div>
                 </div>
-                <div id="bg-dimming-container" style="display: none; flex-direction: column; gap: 8px;">
-                  <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted);">
-                    <span>Затемнение фото-фона:</span>
-                    <span id="lbl-bg-dimming">85%</span>
+                <div id="bg-dimming-container" style="display: none; flex-direction: column; gap: 14px;">
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted);">
+                      <span>Затемнение фото-фона:</span>
+                      <span id="lbl-bg-dimming">85%</span>
+                    </div>
+                    <input type="range" id="range-bg-dimming" min="0" max="100" value="85" style="width: 100%; accent-color: var(--primary); cursor: pointer;">
                   </div>
-                  <input type="range" id="range-bg-dimming" min="0" max="100" value="85" style="width: 100%; accent-color: var(--primary); cursor: pointer;">
+
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted);">
+                      <span>Размер / Масштаб фона:</span>
+                    </div>
+                    <div class="custom-select" id="bg-size-select" style="position: relative; width: 100%;">
+                      <div class="select-trigger" style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-sidebar); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: var(--radius-sm); color: var(--text-main); font-size: 13px; cursor: pointer; user-select: none; border-radius: 6px;">
+                        <span class="select-selected-value">Заполнить (Cover)</span>
+                        <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px; transition: transform 0.2s ease;">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </div>
+                      <div class="select-options" style="display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: var(--radius-sm); z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); overflow: hidden; animation: slideDown 0.2s ease;">
+                        <div class="select-option active" data-value="cover" style="padding: 8px 12px; font-size: 13px; cursor: pointer;">Заполнить (Cover)</div>
+                        <div class="select-option" data-value="contain" style="padding: 8px 12px; font-size: 13px; cursor: pointer;">Вписать (Contain)</div>
+                        <div class="select-option" data-value="100%" style="padding: 8px 12px; font-size: 13px; cursor: pointer;">100% (Оригинал)</div>
+                        <div class="select-option" data-value="110%" style="padding: 8px 12px; font-size: 13px; cursor: pointer;">110% (Масштаб)</div>
+                        <div class="select-option" data-value="120%" style="padding: 8px 12px; font-size: 13px; cursor: pointer;">120% (Масштаб)</div>
+                        <div class="select-option" data-value="130%" style="padding: 8px 12px; font-size: 13px; cursor: pointer;">130% (Масштаб)</div>
+                        <div class="select-option" data-value="150%" style="padding: 8px 12px; font-size: 13px; cursor: pointer;">150% (Масштаб)</div>
+                        <div class="select-option" data-value="200%" style="padding: 8px 12px; font-size: 13px; cursor: pointer;">200% (Масштаб)</div>
+                      </div>
+                    </div>
+                    <input type="hidden" id="sel-bg-size" value="cover">
+                  </div>
+
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted);">
+                      <span>Положение по горизонтали (X):</span>
+                      <span id="lbl-bg-x">50%</span>
+                    </div>
+                    <input type="range" id="range-bg-x" min="0" max="100" value="50" style="width: 100%; accent-color: var(--primary); cursor: pointer;">
+                  </div>
+
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted);">
+                      <span>Положение по вертикали (Y):</span>
+                      <span id="lbl-bg-y">50%</span>
+                    </div>
+                    <input type="range" id="range-bg-y" min="0" max="100" value="50" style="width: 100%; accent-color: var(--primary); cursor: pointer;">
+                  </div>
                 </div>
               </div>
               
