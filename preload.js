@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   
   getSystemSettings: () => ipcRenderer.invoke('get-system-settings'),
   saveSystemSettings: (settings) => ipcRenderer.invoke('save-system-settings', settings),
+  getAppVersion: () => ipcRenderer.invoke('get-app-version'),
   
   scanFolder: (folderPath, previewOnly) => ipcRenderer.invoke('scan-folder', folderPath, previewOnly),
   sortPending: (files) => ipcRenderer.invoke('sort-pending', files),

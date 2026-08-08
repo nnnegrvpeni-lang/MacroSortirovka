@@ -8,6 +8,7 @@ let activeHoverPath = null;
 let appStats = {};
 let appRules = {};
 let activeTab = 'dashboard';
+let currentBgImageDataUrl = null;
 
 // Category color mappings
 const categoryDetails = {
@@ -201,6 +202,17 @@ async function loadAppData() {
         }).catch(() => updatePreview(colors));
       } else {
         updatePreview(colors);
+      }
+    }
+
+    // Fetch and display app version
+    const versionEl = document.getElementById('app-version');
+    if (versionEl) {
+      try {
+        const ver = await window.electronAPI.getAppVersion();
+        versionEl.textContent = `Версия ${ver}`;
+      } catch (err) {
+        console.error('Failed to get app version:', err);
       }
     }
   } catch (error) {
@@ -1050,6 +1062,7 @@ function initEventHandlers() {
         const tempImg = new Image();
         tempImg.src = dataUrl;
         tempImg.onload = async () => {
+          currentBgImageDataUrl = dataUrl;
           const extractedColors = extractThemeFromImage(tempImg);
           
           document.getElementById('col-primary').value = extractedColors.primary;
@@ -1619,20 +1632,30 @@ function applyTheme(theme) {
   const removeBtn = document.getElementById('btn-remove-bg-image');
   
   if (bgImage) {
-    window.electronAPI.getFilePreview(bgImage).then(dataUrl => {
-      if (dataUrl) {
-        const bgRgb = hexToRgb(colors.bgApp) || { r: 9, g: 9, b: 22 };
-        root.style.setProperty('--bg-image-url', `url("${dataUrl}")`);
-        root.style.setProperty('--bg-image-overlay', `linear-gradient(rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, 0.82), rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, 0.88))`);
-        
-        if (thumbnail && thumbnailContainer && removeBtn) {
-          thumbnail.src = dataUrl;
-          thumbnailContainer.style.display = 'block';
-          removeBtn.style.display = 'inline-flex';
-        }
+    const applyBg = (dataUrl) => {
+      const bgRgb = hexToRgb(colors.bgApp) || { r: 9, g: 9, b: 22 };
+      root.style.setProperty('--bg-image-url', `url("${dataUrl}")`);
+      root.style.setProperty('--bg-image-overlay', `linear-gradient(rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, 0.82), rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, 0.88))`);
+      
+      if (thumbnail && thumbnailContainer && removeBtn) {
+        thumbnail.src = dataUrl;
+        thumbnailContainer.style.display = 'block';
+        removeBtn.style.display = 'inline-flex';
       }
-    }).catch(e => console.error(e));
+    };
+
+    if (currentBgImageDataUrl) {
+      applyBg(currentBgImageDataUrl);
+    } else {
+      window.electronAPI.getFilePreview(bgImage).then(dataUrl => {
+        if (dataUrl) {
+          currentBgImageDataUrl = dataUrl;
+          applyBg(dataUrl);
+        }
+      }).catch(e => console.error(e));
+    }
   } else {
+    currentBgImageDataUrl = null;
     root.style.removeProperty('--bg-image-url');
     root.style.removeProperty('--bg-image-overlay');
     

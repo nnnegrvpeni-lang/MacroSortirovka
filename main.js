@@ -215,6 +215,10 @@ if (!gotTheLock) {
   }, 5000);
 
   // Handle IPC calls
+  ipcMain.handle('get-app-version', () => {
+    return app.getVersion();
+  });
+
   ipcMain.handle('get-system-settings', () => {
     return store.get('systemSettings') || { autostart: false, autostartHidden: false, minimizeToTray: true };
   });
