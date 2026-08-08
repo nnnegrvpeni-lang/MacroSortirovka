@@ -20,9 +20,8 @@
     "appId": "com.macro.sorter",
     "productName": "Macro Sorter",
     "publish": {
-      "provider": "github",
-      "owner": "nnnegrvpeni-lang",
-      "repo": "MacroSortirovka"
+      "provider": "generic",
+      "url": "https://macro-sorter-updates.pages.dev"
     },
     "win": {
       "icon": "icon.png",
