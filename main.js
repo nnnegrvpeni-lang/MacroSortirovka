@@ -165,8 +165,7 @@ if (!gotTheLock) {
   app.whenReady().then(() => {
     protocol.handle('local-bg', (request) => {
       try {
-        const urlPath = decodeURIComponent(request.url.replace('local-bg://', ''));
-        const fileUrl = 'file:///' + urlPath.replace(/\\/g, '/');
+        const fileUrl = request.url.replace('local-bg://', 'file:///');
         return net.fetch(fileUrl);
       } catch (e) {
         console.error('Failed to resolve local-bg url:', e);
