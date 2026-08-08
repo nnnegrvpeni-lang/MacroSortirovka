@@ -6,6 +6,7 @@
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder",
+    "postdist": "node inject-github-url.js",
     "pack": "electron-builder --dir"
   },
   "dependencies": {
