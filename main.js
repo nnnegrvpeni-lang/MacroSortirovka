@@ -37,6 +37,9 @@ const defaultStats = {
 };
 
 function createWindow() {
+  const sysSettings = store.get('systemSettings') || {};
+  const bgAppColor = sysSettings.theme?.colors?.bgApp || '#0b0f19';
+
   mainWindow = new BrowserWindow({
     width: 1100,
     height: 750,
@@ -49,7 +52,7 @@ function createWindow() {
       nodeIntegration: false
     },
     title: 'Macro Sorter Pro',
-    backgroundColor: '#0b0f19',
+    backgroundColor: bgAppColor,
     show: false
   });
 
@@ -220,6 +223,7 @@ if (!gotTheLock) {
   });
 
   ipcMain.on('install-update', () => {
+    app.isQuitting = true;
     autoUpdater.quitAndInstall(true, true);
   });
 
@@ -229,6 +233,11 @@ if (!gotTheLock) {
   }, 5000);
 
   // Handle IPC calls
+  ipcMain.on('get-initial-theme-sync', (event) => {
+    const sysSettings = store.get('systemSettings') || {};
+    event.returnValue = sysSettings.theme || null;
+  });
+
   ipcMain.handle('get-app-version', () => {
     return app.getVersion();
   });

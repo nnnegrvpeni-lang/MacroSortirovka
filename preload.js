@@ -39,5 +39,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onUpdateAvailable: (callback) => ipcRenderer.on('update-available', (event, version) => callback(version)),
   onUpdateDownloaded: (callback) => ipcRenderer.on('update-downloaded', () => callback()),
   onUpdateProgress: (callback) => ipcRenderer.on('update-progress', (event, percent) => callback(percent)),
-  onUpdateError: (callback) => ipcRenderer.on('update-error', (event, errorMsg) => callback(errorMsg))
+  onUpdateError: (callback) => ipcRenderer.on('update-error', (event, errorMsg) => callback(errorMsg)),
+  getInitialThemeSync: () => ipcRenderer.sendSync('get-initial-theme-sync')
 });

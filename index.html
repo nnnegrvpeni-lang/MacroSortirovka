@@ -5,6 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Macro Sorter Pro</title>
   <link rel="stylesheet" href="styles.css">
+  <script>
+    try {
+      const theme = window.electronAPI.getInitialThemeSync();
+      if (theme && theme.colors) {
+        const colors = theme.colors;
+        const root = document.documentElement;
+        root.style.setProperty('--primary', colors.primary);
+        root.style.setProperty('--bg-app', colors.bgApp);
+        root.style.setProperty('--bg-sidebar', colors.bgSidebar);
+        root.style.setProperty('--bg-card', colors.bgCard);
+        root.style.setProperty('--text-main', colors.textMain);
+        
+        const hexToRgb = (hex) => {
+          const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+          const fullHex = hex.replace(shorthandRegex, (m, r, g, b) => r + r + g + g + b + b);
+          const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(fullHex);
+          return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : null;
+        };
+
+        const rgb = hexToRgb(colors.primary);
+        if (rgb) {
+          root.style.setProperty('--primary-rgb', rgb);
+          root.style.setProperty('--primary-glow', `rgba(${rgb}, 0.15)`);
+          root.style.setProperty('--primary-hover', `rgba(${rgb}, 0.85)`);
+        }
+      }
+    } catch(e) {
+      console.error('Failed to load initial theme:', e);
+    }
+  </script>
 </head>
 <body>
   <div class="app-container">
