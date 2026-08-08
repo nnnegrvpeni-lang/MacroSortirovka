@@ -256,6 +256,21 @@ function setupWatchersListeners() {
 
   // Listen for auto-updater events
   window.electronAPI.onUpdateAvailable((version) => {
+    const sidebarUpdateBtn = document.getElementById('btn-sidebar-update');
+    if (sidebarUpdateBtn) {
+      sidebarUpdateBtn.style.display = 'inline-flex';
+      
+      // When clicked, trigger the modal display!
+      sidebarUpdateBtn.onclick = () => {
+        showUpdatePromptModal(version);
+      };
+      
+      // Toast notice
+      showToast('Доступно обновление', `Доступна новая версия v${version}. Нажмите «Обновить» в левом нижнем углу.`, 'info');
+    }
+  });
+
+  function showUpdatePromptModal(version) {
     let modal = document.getElementById('update-prompt-modal');
     if (!modal) {
       modal = document.createElement('div');
@@ -283,32 +298,23 @@ function setupWatchersListeners() {
               <span id="update-progress-percent">0%</span>
             </div>
             <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden;">
-              <div id="update-progress-bar" style="width: 0%; height: 100%; background: var(--primary); transition: width 0.1s ease; box-shadow: 0 0 8px var(--primary-glow);"></div>
+              <div id="update-progress-bar" style="width: 0%; height: 100%; background: var(--primary); transition: width 0.1s ease; box-shadow: 0 0 8px var(--primary-glow); width: 0%;"></div>
             </div>
           </div>
 
           <div class="modal-buttons" id="update-modal-buttons" style="display: flex; justify-content: flex-end; gap: 12px;">
-            <button class="btn btn-secondary" id="btn-update-later" style="padding: 10px 18px;">Позже</button>
+            <button class="btn btn-secondary" id="btn-update-later" style="padding: 10px 18px;">Закрыть</button>
             <button class="btn btn-primary" id="btn-update-download" style="padding: 10px 18px; background: var(--primary); box-shadow: 0 0 10px var(--primary-glow);">Скачать</button>
           </div>
         </div>
       `;
       document.body.appendChild(modal);
 
-      // Event listener for Later
+      // Event listener for Close/Later
       document.getElementById('btn-update-later').addEventListener('click', () => {
         modal.style.opacity = '0';
         modal.querySelector('.custom-modal-card').style.transform = 'scale(0.9)';
         setTimeout(() => { modal.style.display = 'none'; }, 300);
-      });
-
-      // Event listener for Download
-      document.getElementById('btn-update-download').addEventListener('click', () => {
-        document.getElementById('btn-update-download').disabled = true;
-        document.getElementById('btn-update-later').style.display = 'none';
-        document.getElementById('update-progress-container').style.display = 'block';
-        document.getElementById('btn-update-download').textContent = 'Скачивание...';
-        window.electronAPI.downloadUpdate();
       });
     }
 
@@ -319,16 +325,30 @@ function setupWatchersListeners() {
     document.getElementById('update-progress-percent').textContent = '0%';
     document.getElementById('update-modal-buttons').style.display = 'flex';
     document.getElementById('btn-update-later').style.display = 'inline-flex';
+    document.getElementById('btn-update-later').textContent = 'Закрыть';
     document.getElementById('btn-update-download').disabled = false;
     document.getElementById('btn-update-download').textContent = 'Скачать';
     document.getElementById('btn-update-download').style.display = 'inline-flex';
+    
+    // Set download click handler
+    const btnDownload = document.getElementById('btn-update-download');
+    const newBtn = btnDownload.cloneNode(true);
+    btnDownload.parentNode.replaceChild(newBtn, btnDownload);
+    
+    newBtn.addEventListener('click', () => {
+      newBtn.disabled = true;
+      document.getElementById('btn-update-later').style.display = 'none';
+      document.getElementById('update-progress-container').style.display = 'block';
+      newBtn.textContent = 'Скачивание...';
+      window.electronAPI.downloadUpdate();
+    });
 
     // Show modal
     modal.style.display = 'flex';
     modal.offsetHeight;
     modal.style.opacity = '1';
     modal.querySelector('.custom-modal-card').style.transform = 'scale(1)';
-  });
+  }
 
   window.electronAPI.onUpdateProgress((percent) => {
     const bar = document.getElementById('update-progress-bar');
@@ -340,7 +360,6 @@ function setupWatchersListeners() {
   });
 
   window.electronAPI.onUpdateDownloaded(() => {
-    // Modify prompt to let user restart
     const modalText = document.getElementById('update-modal-text');
     if (modalText) {
       modalText.textContent = 'Новая версия успешно скачана! Установить и перезапустить приложение сейчас?';
@@ -355,7 +374,6 @@ function setupWatchersListeners() {
       btnDownload.textContent = 'Установить';
       btnDownload.style.display = 'inline-flex';
       
-      // Remove old listeners and replace with quitAndInstall trigger
       const newBtn = btnDownload.cloneNode(true);
       btnDownload.parentNode.replaceChild(newBtn, btnDownload);
       
@@ -368,6 +386,18 @@ function setupWatchersListeners() {
     if (btnLater) {
       btnLater.style.display = 'inline-flex';
       btnLater.textContent = 'Позже';
+    }
+  });
+
+  window.electronAPI.onUpdateError((errorMsg) => {
+    console.error('Update error:', errorMsg);
+    showToast('Ошибка обновления', 'Не удалось скачать файлы обновления: ' + errorMsg, 'warning');
+    
+    const modal = document.getElementById('update-prompt-modal');
+    if (modal) {
+      modal.style.opacity = '0';
+      modal.querySelector('.custom-modal-card').style.transform = 'scale(0.9)';
+      setTimeout(() => { modal.style.display = 'none'; }, 300);
     }
   });
 }

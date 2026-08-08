@@ -211,6 +211,10 @@ if (!gotTheLock) {
     sendToRenderer('update-downloaded');
   });
 
+  autoUpdater.on('error', (err) => {
+    sendToRenderer('update-error', err ? err.message : 'Unknown error');
+  });
+
   ipcMain.on('download-update', () => {
     autoUpdater.downloadUpdate().catch(err => console.error('Failed to download update:', err));
   });
