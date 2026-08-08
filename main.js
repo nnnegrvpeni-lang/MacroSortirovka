@@ -165,7 +165,13 @@ if (!gotTheLock) {
   app.whenReady().then(() => {
     protocol.handle('local-bg', (request) => {
       try {
-        const urlPath = decodeURIComponent(request.url.replace('local-bg://', ''));
+        let urlPath = decodeURIComponent(request.url.replace('local-bg://', ''));
+        
+        // If Chromium parsed host and stripped drive colon (e.g. "c/Users/..." or "C/Users/..."), restore it!
+        if (urlPath.length > 1 && urlPath[1] === '/') {
+          urlPath = urlPath[0] + ':' + urlPath.substring(1);
+        }
+        
         const normalizedPath = path.normalize(urlPath);
         
         if (fs.existsSync(normalizedPath)) {
