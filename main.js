@@ -271,7 +271,12 @@ if (!gotTheLock) {
   // Check for updates shortly after startup
   setTimeout(() => {
     autoUpdater.checkForUpdatesAndNotify().catch(err => console.error('AutoUpdate check failed:', err));
-  }, 5000);
+  }, 1000);
+
+  // Poll for updates every 3 minutes in the background
+  setInterval(() => {
+    autoUpdater.checkForUpdatesAndNotify().catch(err => console.error('AutoUpdate check failed:', err));
+  }, 3 * 60 * 1000);
 
   // Handle IPC calls
   ipcMain.on('get-initial-theme-sync', (event) => {

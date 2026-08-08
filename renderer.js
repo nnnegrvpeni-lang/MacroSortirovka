@@ -185,6 +185,22 @@ async function loadAppData() {
       document.getElementById('lbl-bg-card').textContent = colors.bgCard;
       document.getElementById('lbl-text-main').textContent = colors.textMain;
       
+      // Sync customization settings controls
+      const chkEnableGlow = document.getElementById('chk-enable-glow');
+      if (chkEnableGlow) {
+        chkEnableGlow.checked = currentTheme.enableGlow !== false;
+      }
+      
+      const rangeBgDimming = document.getElementById('range-bg-dimming');
+      const lblBgDimming = document.getElementById('lbl-bg-dimming');
+      const bgDimmingContainer = document.getElementById('bg-dimming-container');
+      if (rangeBgDimming && lblBgDimming && bgDimmingContainer) {
+        const dimVal = currentTheme.bgDimming !== undefined ? currentTheme.bgDimming : 85;
+        rangeBgDimming.value = dimVal;
+        lblBgDimming.textContent = `${dimVal}%`;
+        bgDimmingContainer.style.display = bgImage ? 'flex' : 'none';
+      }
+      
       // Set active preset button
       const presetBtns = document.querySelectorAll('.theme-preset-btn');
       presetBtns.forEach(btn => {
@@ -859,22 +875,52 @@ function renderSettingsTab() {
   existingGroups.forEach(g => g.remove());
 
   const actions = form.querySelector('.form-actions');
+  const defaultCategories = ['Images', 'Documents', 'Audio', 'Video', 'Archives', 'Applications', 'Code'];
 
   // Generate input fields for rules categories
   for (const [category, extensions] of Object.entries(appRules)) {
+    if (category === 'Others') continue; // Skip Others fallback
+
     const group = document.createElement('div');
     group.className = 'form-group';
+    group.style.cssText = 'position: relative;';
 
     const cat = categoryDetails[category] || { label: category };
     const extStr = extensions.join(', ');
+    const isDefault = defaultCategories.includes(category);
+    
+    // If custom category, we display a delete button
+    const deleteBtn = !isDefault ? `
+      <button type="button" class="btn-delete-rule" data-category="${category}" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 6px; display: inline-flex; align-items: center; justify-content: center; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); transition: var(--transition-fast); opacity: 0.7;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+      </button>
+    ` : '';
 
     group.innerHTML = `
-      <label for="rule-input-${category}">${cat.label}</label>
-      <input type="text" id="rule-input-${category}" name="${category}" value="${extStr}">
+      <label for="rule-input-${category}" style="font-weight: 600;">${cat.label}</label>
+      <div style="position: relative; width: 100%;">
+        <input type="text" id="rule-input-${category}" name="${category}" value="${extStr}" style="width: 100%; padding-right: ${!isDefault ? '40px' : '14px'}; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 10px; border-radius: var(--radius-sm); color: var(--text-main); font-family: inherit;">
+        ${deleteBtn}
+      </div>
     `;
 
     form.insertBefore(group, actions);
   }
+
+  // Add click listeners to delete buttons
+  const deleteBtns = form.querySelectorAll('.btn-delete-rule');
+  deleteBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const category = btn.getAttribute('data-category');
+      if (confirm(`Удалить категорию сортировки «${category}»?`)) {
+        delete appRules[category];
+        renderSettingsTab();
+      }
+    });
+  });
 }
 
 // --- Event Handlers ---
@@ -989,28 +1035,29 @@ function initEventHandlers() {
 
   // Rules form reset to default button
   const btnResetRules = document.getElementById('btn-reset-rules');
-  btnResetRules.addEventListener('click', () => {
-    if (confirm('Сбросить правила к настройкам по умолчанию?')) {
-      // Standard rules mapping
-      const defaultRules = {
-        Images: ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.webp', '.bmp', '.ico', '.heic', '.tiff'],
-        Documents: ['.pdf', '.docx', '.doc', '.xlsx', '.xls', '.pptx', '.ppt', '.txt', '.rtf', '.odt', '.csv', '.md'],
-        Audio: ['.mp3', '.wav', '.wma', '.ogg', '.m4a', '.flac', '.aac'],
-        Video: ['.mp4', '.mkv', '.avi', '.mov', '.wmv', '.flv', '.webm'],
-        Archives: ['.zip', '.rar', '.tar', '.gz', '.7z', '.iso'],
-        Applications: ['.exe', '.msi', '.bat', '.cmd', '.sh'],
-        Code: ['.js', '.ts', '.html', '.css', '.json', '.py', '.cpp', '.h', '.java', '.go', '.cs', '.php']
-      };
-      
-      // Populate fields
-      for (const [category, extensions] of Object.entries(defaultRules)) {
-        const input = document.getElementById(`rule-input-${category}`);
-        if (input) {
-          input.value = extensions.join(', ');
+  if (btnResetRules) {
+    btnResetRules.addEventListener('click', async () => {
+      if (confirm('Сбросить правила к настройкам по умолчанию? (Все ваши добавленные категории будут удалены)')) {
+        const defaultRules = {
+          Images: ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.webp', '.bmp', '.ico', '.heic', '.tiff', '.jfif'],
+          Documents: ['.pdf', '.docx', '.doc', '.xlsx', '.xls', '.pptx', '.ppt', '.txt', '.rtf', '.odt', '.csv', '.md'],
+          Audio: ['.mp3', '.wav', '.wma', '.ogg', '.m4a', '.flac', '.aac'],
+          Video: ['.mp4', '.mkv', '.avi', '.mov', '.wmv', '.flv', '.webm'],
+          Archives: ['.zip', '.rar', '.tar', '.gz', '.7z', '.iso'],
+          Applications: ['.exe', '.msi', '.bat', '.cmd', '.sh'],
+          Code: ['.js', '.ts', '.html', '.css', '.json', '.py', '.cpp', '.h', '.java', '.go', '.cs', '.php']
+        };
+        
+        try {
+          appRules = await window.electronAPI.saveRules(defaultRules);
+          renderSettingsTab();
+          showToast('Правила сброшены', 'Настройки распределения сброшены по умолчанию', 'info');
+        } catch (err) {
+          showToast('Ошибка', 'Не удалось сбросить правила', 'warning');
         }
       }
-    }
-  });
+    });
+  }
 
   // Save system settings click handler
   const btnSaveSystem = document.getElementById('btn-save-system-settings');
@@ -1063,18 +1110,22 @@ function initEventHandlers() {
         document.getElementById('lbl-bg-card').textContent = colors.bgCard;
         document.getElementById('lbl-text-main').textContent = colors.textMain;
         
-        // Remove custom background image if any and apply preset
+        // Apply preset and keep custom background image if any
         const sysSettings = await window.electronAPI.getSystemSettings();
+        const currentBg = sysSettings.theme?.bgImage || null;
+        const currentDim = sysSettings.theme?.bgDimming !== undefined ? sysSettings.theme.bgDimming : 85;
+        const currentGlow = sysSettings.theme?.enableGlow !== false;
+        
         if (sysSettings.theme) {
-          delete sysSettings.theme.bgImage;
           sysSettings.theme.preset = presetId;
           sysSettings.theme.colors = colors;
         } else {
           sysSettings.theme = { preset: presetId, colors: colors };
         }
+        
         await window.electronAPI.saveSystemSettings(sysSettings);
         applyTheme(sysSettings.theme);
-        updatePreview(colors, null);
+        updatePreview(colors, currentBg ? `local-bg://${currentBg.replace(/\\/g, '/')}` : null);
       }
     });
   });
@@ -1137,15 +1188,21 @@ function initEventHandlers() {
       try {
         const sysSettings = await window.electronAPI.getSystemSettings();
         const currentBgImage = sysSettings.theme ? sysSettings.theme.bgImage : null;
+        
+        const dimVal = document.getElementById('range-bg-dimming') ? parseInt(document.getElementById('range-bg-dimming').value, 10) : 85;
+        const enableGlowVal = document.getElementById('chk-enable-glow') ? document.getElementById('chk-enable-glow').checked : true;
+        
         sysSettings.theme = {
           preset: presetId,
           colors: themeColors,
-          bgImage: currentBgImage
+          bgImage: currentBgImage,
+          bgDimming: dimVal,
+          enableGlow: enableGlowVal
         };
         
         await window.electronAPI.saveSystemSettings(sysSettings);
         applyTheme(sysSettings.theme);
-        showToast('Тема обновлена', 'Цветовая схема успешно применена ко всему приложению', 'success');
+        showToast('Тема обновлена', 'Цветовая схема и эффекты успешно применены', 'success');
       } catch (err) {
         showToast('Ошибка', 'Не удалось сохранить тему', 'warning');
       } finally {
@@ -1210,10 +1267,15 @@ function initEventHandlers() {
           presetBtns.forEach(b => b.classList.remove('active'));
           
           const sysSettings = await window.electronAPI.getSystemSettings();
+          const currentDim = sysSettings.theme?.bgDimming !== undefined ? sysSettings.theme.bgDimming : 85;
+          const currentGlow = sysSettings.theme?.enableGlow !== false;
+          
           sysSettings.theme = {
             preset: 'custom',
             colors: extractedColors,
-            bgImage: savedPath
+            bgImage: savedPath,
+            bgDimming: currentDim,
+            enableGlow: currentGlow
           };
           
           await window.electronAPI.saveSystemSettings(sysSettings);
@@ -1261,6 +1323,149 @@ function initEventHandlers() {
         showToast('Ошибка', 'Не удалось удалить фоновое изображение', 'warning');
       }
     });
+  }
+
+  // Background Dimming Range Input Listener
+  const rangeBgDimming = document.getElementById('range-bg-dimming');
+  const lblBgDimming = document.getElementById('lbl-bg-dimming');
+  if (rangeBgDimming && lblBgDimming) {
+    rangeBgDimming.addEventListener('input', async (e) => {
+      const value = e.target.value;
+      lblBgDimming.textContent = `${value}%`;
+      
+      const sysSettings = await window.electronAPI.getSystemSettings();
+      if (sysSettings.theme) {
+        sysSettings.theme.bgDimming = parseInt(value, 10);
+        await window.electronAPI.saveSystemSettings(sysSettings);
+        applyTheme(sysSettings.theme);
+        
+        const bgUrl = sysSettings.theme.bgImage ? `local-bg://${sysSettings.theme.bgImage.replace(/\\/g, '/')}` : null;
+        updatePreview(sysSettings.theme.colors, bgUrl);
+      }
+    });
+  }
+
+  // Glow Checkbox Listener
+  const chkEnableGlow = document.getElementById('chk-enable-glow');
+  if (chkEnableGlow) {
+    chkEnableGlow.addEventListener('change', async (e) => {
+      const checked = e.target.checked;
+      const sysSettings = await window.electronAPI.getSystemSettings();
+      if (sysSettings.theme) {
+        sysSettings.theme.enableGlow = checked;
+        await window.electronAPI.saveSystemSettings(sysSettings);
+        applyTheme(sysSettings.theme);
+        
+        const bgUrl = sysSettings.theme.bgImage ? `local-bg://${sysSettings.theme.bgImage.replace(/\\/g, '/')}` : null;
+        updatePreview(sysSettings.theme.colors, bgUrl);
+      }
+    });
+  }
+
+  // Add Custom Rule click
+  const btnAddCustomRule = document.getElementById('btn-add-custom-rule');
+  if (btnAddCustomRule) {
+    btnAddCustomRule.addEventListener('click', () => {
+      showAddCustomRuleModal();
+    });
+  }
+
+  function showAddCustomRuleModal() {
+    let modal = document.getElementById('custom-rule-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'custom-rule-modal';
+      modal.className = 'custom-modal-overlay';
+      modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10000; opacity: 0; transition: opacity 0.3s ease;';
+      
+      modal.innerHTML = `
+        <div class="custom-modal-card" style="width: 400px; background: var(--bg-card); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); backdrop-filter: blur(10px); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+          <h3 style="font-size: 18px; font-weight: 700; color: var(--text-main); margin-top: 0; margin-bottom: 16px;">Добавить новое правило</h3>
+          
+          <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;">
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <label style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Имя категории (папки):</label>
+              <input type="text" id="custom-rule-name" placeholder="Например: Дизайн" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 10px; border-radius: var(--radius-sm); color: var(--text-main); font-family: inherit; font-size: 14px; outline: none; border-radius: 6px;">
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <label style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Расширения файлов (через запятую):</label>
+              <input type="text" id="custom-rule-exts" placeholder="Например: .psd, .ai, .xd" style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 10px; border-radius: var(--radius-sm); color: var(--text-main); font-family: inherit; font-size: 14px; outline: none; border-radius: 6px;">
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 12px;">
+            <button class="btn btn-secondary" id="btn-cancel-custom-rule" style="padding: 10px 18px;">Отмена</button>
+            <button class="btn btn-primary" id="btn-submit-custom-rule" style="padding: 10px 18px; background: var(--primary); box-shadow: 0 0 10px var(--primary-glow);">Добавить</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      document.getElementById('btn-cancel-custom-rule').addEventListener('click', () => {
+        modal.style.opacity = '0';
+        modal.querySelector('.custom-modal-card').style.transform = 'scale(0.9)';
+        setTimeout(() => { modal.style.display = 'none'; }, 300);
+      });
+
+      document.getElementById('btn-submit-custom-rule').addEventListener('click', () => {
+        const nameInput = document.getElementById('custom-rule-name');
+        const extsInput = document.getElementById('custom-rule-exts');
+        
+        const categoryName = nameInput.value.trim();
+        const extensions = extsInput.value.split(',')
+          .map(ext => ext.trim().toLowerCase())
+          .filter(ext => ext.length > 0)
+          .map(ext => ext.startsWith('.') ? ext : '.' + ext);
+          
+        if (!categoryName) {
+          showToast('Ошибка', 'Введите имя категории', 'warning');
+          return;
+        }
+        if (extensions.length === 0) {
+          showToast('Ошибка', 'Введите хотя бы одно расширение', 'warning');
+          return;
+        }
+
+        // Add rule to local state
+        appRules[categoryName] = extensions;
+        
+        // Dynamically register color mapping if not exists
+        if (!categoryDetails[categoryName]) {
+          categoryDetails[categoryName] = {
+            label: categoryName,
+            color: getRandomAccentColor(),
+            class: 'cat-custom'
+          };
+        }
+
+        renderSettingsTab();
+        
+        // Close modal
+        modal.style.opacity = '0';
+        modal.querySelector('.custom-modal-card').style.transform = 'scale(0.9)';
+        setTimeout(() => { 
+          modal.style.display = 'none'; 
+          nameInput.value = '';
+          extsInput.value = '';
+        }, 300);
+      });
+    }
+
+    // Reset inputs
+    document.getElementById('custom-rule-name').value = '';
+    document.getElementById('custom-rule-exts').value = '';
+    
+    // Show modal
+    modal.style.display = 'flex';
+    modal.offsetHeight;
+    modal.style.opacity = '1';
+    modal.querySelector('.custom-modal-card').style.transform = 'scale(1)';
+  }
+
+  function getRandomAccentColor() {
+    const colors = ['#f43f5e', '#ec4899', '#d946ef', '#a855f7', '#8b5cf6', '#6366f1', '#3b82f6', '#0ea5e9', '#06b6d4', '#14b8a6', '#10b981', '#22c55e', '#84cc16', '#eab308', '#f97316'];
+    return colors[Math.floor(Math.random() * colors.length)];
   }
 
   // Custom dropdown behavior
@@ -1745,8 +1950,10 @@ function applyTheme(theme) {
   const colors = theme.colors;
   const root = document.documentElement;
   
+  const enableGlow = theme.enableGlow !== false;
+  
   root.style.setProperty('--primary', colors.primary);
-  root.style.setProperty('--primary-glow', hexToRgbA(colors.primary, 0.3));
+  root.style.setProperty('--primary-glow', enableGlow ? hexToRgbA(colors.primary, 0.3) : 'transparent');
   root.style.setProperty('--primary-hover', colors.primary);
   root.style.setProperty('--bg-app', colors.bgApp);
   root.style.setProperty('--bg-sidebar', colors.bgSidebar);
@@ -1760,17 +1967,32 @@ function applyTheme(theme) {
   const thumbnail = document.getElementById('bg-image-thumbnail');
   const thumbnailContainer = document.getElementById('bg-image-thumbnail-container');
   const removeBtn = document.getElementById('btn-remove-bg-image');
+  const dimmingContainer = document.getElementById('bg-dimming-container');
   
   if (bgImage) {
     const bgRgb = hexToRgb(colors.bgApp) || { r: 9, g: 9, b: 22 };
     const bgUrl = `local-bg://${bgImage.replace(/\\/g, '/')}`;
+    
+    const dimVal = theme.bgDimming !== undefined ? theme.bgDimming : 85;
+    const startOpacity = (dimVal / 100) * 0.95;
+    const endOpacity = (dimVal / 100) * 1.0;
+    
     root.style.setProperty('--bg-image-url', `url("${bgUrl}")`);
-    root.style.setProperty('--bg-image-overlay', `linear-gradient(rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, 0.82), rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, 0.88))`);
+    root.style.setProperty('--bg-image-overlay', `linear-gradient(rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${startOpacity}), rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${endOpacity}))`);
     
     if (thumbnail && thumbnailContainer && removeBtn) {
       thumbnail.src = bgUrl;
       thumbnailContainer.style.display = 'block';
       removeBtn.style.display = 'inline-flex';
+    }
+    if (dimmingContainer) {
+      dimmingContainer.style.display = 'flex';
+      const rangeBgDimming = document.getElementById('range-bg-dimming');
+      const lblBgDimming = document.getElementById('lbl-bg-dimming');
+      if (rangeBgDimming && lblBgDimming) {
+        rangeBgDimming.value = dimVal;
+        lblBgDimming.textContent = `${dimVal}%`;
+      }
     }
   } else {
     root.style.removeProperty('--bg-image-url');
@@ -1781,6 +2003,9 @@ function applyTheme(theme) {
       thumbnailContainer.style.display = 'none';
       removeBtn.style.display = 'none';
     }
+    if (dimmingContainer) {
+      dimmingContainer.style.display = 'none';
+    }
   }
 }
 
@@ -1788,16 +2013,24 @@ function updatePreview(colors, bgImageUrl = null) {
   const frame = document.getElementById('theme-preview-frame');
   if (!frame) return;
   
+  const chkEnableGlow = document.getElementById('chk-enable-glow');
+  const enableGlow = chkEnableGlow ? chkEnableGlow.checked : true;
+  
   frame.style.setProperty('--primary-preview', colors.primary);
-  frame.style.setProperty('--primary-glow-preview', hexToRgbA(colors.primary, 0.3));
+  frame.style.setProperty('--primary-glow-preview', enableGlow ? hexToRgbA(colors.primary, 0.3) : 'transparent');
   frame.style.setProperty('--bg-app-preview', colors.bgApp);
   frame.style.setProperty('--bg-sidebar-preview', colors.bgSidebar);
   frame.style.setProperty('--bg-card-preview', hexToRgbA(colors.bgCard, 0.5));
   frame.style.setProperty('--text-main-preview', colors.textMain);
 
   const bgRgb = hexToRgb(colors.bgApp) || { r: 9, g: 9, b: 22 };
+  const rangeBgDimming = document.getElementById('range-bg-dimming');
+  const dimVal = rangeBgDimming ? parseInt(rangeBgDimming.value, 10) : 85;
+  const startOpacity = (dimVal / 100) * 0.95;
+  const endOpacity = (dimVal / 100) * 1.0;
+  
   if (bgImageUrl) {
-    frame.style.backgroundImage = `linear-gradient(rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, 0.82), rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, 0.88)), url("${bgImageUrl}")`;
+    frame.style.backgroundImage = `linear-gradient(rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${startOpacity}), rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${endOpacity})), url("${bgImageUrl}")`;
     frame.style.backgroundSize = 'cover';
     frame.style.backgroundPosition = 'center';
   } else {

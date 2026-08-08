@@ -318,7 +318,8 @@
             
             <form id="settings-rules-form" class="rules-form">
               <!-- Rules fields will be rendered here dynamically -->
-              <div class="form-actions">
+              <div class="form-actions" style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="button" class="btn btn-secondary" id="btn-add-custom-rule" style="margin-right: auto; background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.2); color: var(--primary);">+ Добавить правило</button>
                 <button type="button" class="btn btn-secondary" id="btn-reset-rules">Сбросить</button>
                 <button type="submit" class="btn btn-primary" id="btn-save-rules">Сохранить правила</button>
               </div>
@@ -426,7 +427,7 @@
               <div class="settings-card">
                 <h3>Фоновое изображение</h3>
                 <p class="sub-text" style="margin-bottom: 12px;">Загрузите своё изображение, и приложение автоматически подберёт гармоничные цвета интерфейса под него.</p>
-                <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
                   <button type="button" class="btn btn-secondary" id="btn-select-bg-image" style="flex: 1; height: 38px; justify-content: center;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px; margin-right: 6px;">
                       <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -439,9 +440,28 @@
                     Удалить
                   </button>
                 </div>
-                <div id="bg-image-thumbnail-container" style="display: none; margin-top: 12px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border-color); height: 80px; position: relative;">
+                <div id="bg-image-thumbnail-container" style="display: none; margin-bottom: 16px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border-color); height: 80px; position: relative;">
                   <img id="bg-image-thumbnail" src="" style="width: 100%; height: 100%; object-fit: cover;">
                   <div style="position: absolute; bottom: 4px; right: 6px; background: rgba(0,0,0,0.6); padding: 2px 6px; border-radius: 4px; font-size: 10px; color: #fff;">Активно</div>
+                </div>
+                <div id="bg-dimming-container" style="display: none; flex-direction: column; gap: 8px;">
+                  <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted);">
+                    <span>Затемнение фото-фона:</span>
+                    <span id="lbl-bg-dimming">85%</span>
+                  </div>
+                  <input type="range" id="range-bg-dimming" min="0" max="100" value="85" style="width: 100%; accent-color: var(--primary); cursor: pointer;">
+                </div>
+              </div>
+              
+              <div class="settings-card">
+                <h3>Визуальные эффекты</h3>
+                <p class="sub-text" style="margin-bottom: 16px;">Настройка дополнительных эффектов свечения интерфейса.</p>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                  <label class="custom-checkbox flex-checkbox" style="display: flex; align-items: center; gap: 10px; width: 100%; height: auto;">
+                    <input type="checkbox" id="chk-enable-glow" checked>
+                    <span class="checkmark" style="position: static; flex-shrink: 0;"></span>
+                    <span class="checkbox-label" style="font-size: 14px; font-weight: 500; color: var(--text-main);">Включить неоновую подсветку (glow)</span>
+                  </label>
                 </div>
               </div>
               
