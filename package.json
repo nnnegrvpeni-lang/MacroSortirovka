@@ -36,7 +36,8 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Macro Sorter"
+      "shortcutName": "Macro Sorter",
+      "artifactName": "Macro-Sorter-Setup-${version}.${ext}"
     },
     "files": [
       "**/*",
