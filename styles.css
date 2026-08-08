@@ -306,8 +306,11 @@ body {
 
 .tab-content {
   display: none;
-  animation: fadeIn 0.35s ease-out;
+  animation: fadeIn 0.15s ease-out;
   height: 100%;
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
 
 .tab-content.active {
@@ -319,6 +322,10 @@ body {
   background: var(--bg-panel);
   border: 1px solid var(--border-color);
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  will-change: backdrop-filter;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
   border-radius: var(--radius-lg);
   padding: 28px 32px;
   display: flex;
